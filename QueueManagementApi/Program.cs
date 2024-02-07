@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using QueueManagementApi.Application.Extensions;
+using QueueManagementApi.Infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,7 +11,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContextCustom(); 
+builder.Services.AddServices(); // add services from application layer
+builder.Services.AddRepositories();
+
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var dbContext = scope.ServiceProvider.GetService<QueueManagementDbContext>();
+    await dbContext!.Database.MigrateAsync();
+}
 
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())

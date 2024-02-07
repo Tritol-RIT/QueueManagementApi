@@ -2,8 +2,8 @@
 
 namespace QueueManagementApi.Controllers;
 
-public class HealthController : ControllerBase
+public class HealthController : ApiController
 {
-    [HttpGet("/healthcheck")]
+    [HttpGet("healthcheck")]
     public ActionResult Healthcheck() => Ok(new { Healthy = true });
 }
