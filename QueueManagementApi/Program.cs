@@ -11,7 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContextCustom(); 
+builder.Services.AddDbContextCustom(builder.Configuration);
 builder.Services.AddServices(); // add services from application layer
 builder.Services.AddRepositories();
 

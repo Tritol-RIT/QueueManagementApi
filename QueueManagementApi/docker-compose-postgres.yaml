@@ -1,0 +1,28 @@
+﻿version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: QueueManagement
+      POSTGRES_USER: queuemanagementuser
+      POSTGRES_PASSWORD: dbtke0Fb6lzS35WxMShBYS27b
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: always
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@queue.com
+      PGADMIN_DEFAULT_PASSWORD: adminqueue
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    restart: always
+
+volumes:
+  postgres-data:
