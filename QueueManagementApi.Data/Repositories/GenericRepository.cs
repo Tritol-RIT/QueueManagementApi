@@ -29,7 +29,7 @@ public class GenericRepository<T> : IRepository<T> where T : BaseEntity
         return await _context.FindAsync<T>(id);
     }
 
-    public async Task Add(T entity)
+    public async Task AddAsync(T entity)
     {
         await _context.Set<T>().AddAsync(entity);
     }
