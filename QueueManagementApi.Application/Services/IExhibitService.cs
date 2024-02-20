@@ -6,4 +6,5 @@ public interface IExhibitService
 {
     Task<Exhibit?> GetExhibitById(int id);
     IEnumerable<Exhibit> GetAllExhibits();
+    Task AddSingleExhibit(Exhibit exhibit);
 }

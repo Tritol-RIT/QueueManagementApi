@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
+using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services;
 using QueueManagementApi.Core.Entities;
 
@@ -28,5 +29,22 @@ public class ExhibitController : ApiController
         if (exhibit == null) return NotFound();
         
         return Ok(exhibit);
+    }
+
+    [HttpPost("createSingleExhibit")]
+    public async Task<ActionResult<Exhibit>> CreateExhibit(CreateExhibitDto exhibit)
+    {
+        var exhibitEntity = new Exhibit
+        {
+            Title = exhibit.Title,
+            Description = exhibit.Description,
+            MaxCapacity = exhibit.MaxCapacity,
+            InitialDuration = exhibit.InitialDuration,
+            InsuranceFormRequired = exhibit.InsuranceFormRequired,
+            AgeRequired = exhibit.AgeRequired,
+            InsuranceFormFileUrl = exhibit.InsuranceFormFileUrl,
+        };
+        await _exhibitService.AddSingleExhibit(exhibitEntity);
+        return CreatedAtAction(nameof(GetExhibitById), new { id = exhibitEntity.Id }, exhibitEntity);
     }
 }

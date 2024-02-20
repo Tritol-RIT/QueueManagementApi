@@ -25,7 +25,7 @@ public class Exhibit : BaseEntity, IAuditable
 
     public string? InsuranceFormFileUrl { get; set; }
 
-    public DateTime CreatedOn { get; set; } = DateTime.Now;
+    public DateTime CreatedOn { get; set; } = DateTime.Now.ToUniversalTime();
 
     public DateTime? UpdatedOn { get; set; }
 
