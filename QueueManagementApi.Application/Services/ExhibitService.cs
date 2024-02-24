@@ -1,4 +1,5 @@
-﻿using QueueManagementApi.Core.Entities;
+﻿using QueueManagementApi.Application.Dtos;
+using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Interfaces;
 
 namespace QueueManagementApi.Application.Services;
@@ -27,5 +28,15 @@ public class ExhibitService : IExhibitService
     {
         await _exhibitRepository.AddAsync(exhibit);
         await _unitOfWork.CompleteAsync();
+    }
+
+    public async Task AddMultipleExhibits(List<Exhibit> file)
+    {
+        foreach (var exhibit in file)
+        {
+            exhibit.InitialDuration = exhibit.InitialDuration.ToUniversalTime();
+            await _exhibitRepository.AddAsync(exhibit);
+            await _unitOfWork.CompleteAsync();
+        }
     }
 }
