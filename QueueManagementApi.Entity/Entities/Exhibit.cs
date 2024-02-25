@@ -15,7 +15,9 @@ public class Exhibit : BaseEntity, IAuditable
     public int MaxCapacity { get; set; }
 
     [Required]
-    public DateTime InitialDuration { get; set; }
+    public int InitialDuration { get; set; }
+
+    public int? CurrentDuration { get; set; }
 
     [Required]
     public bool InsuranceFormRequired { get; set; }
@@ -23,9 +25,11 @@ public class Exhibit : BaseEntity, IAuditable
     [Required]
     public bool AgeRequired { get; set; }
 
+    public int? AgeMinimum { get; set; }
+
     public string? InsuranceFormFileUrl { get; set; }
 
-    public DateTime CreatedOn { get; set; } = DateTime.Now;
+    public DateTime CreatedOn { get; set; } = DateTime.Now.ToUniversalTime();
 
     public DateTime? UpdatedOn { get; set; }
 

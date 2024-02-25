@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace QueueManagementApi.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Exhibitions : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,9 +21,11 @@ namespace QueueManagementApi.Infrastructure.Migrations
                     Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
                     MaxCapacity = table.Column<int>(type: "integer", nullable: false),
-                    InitialDuration = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    InitialDuration = table.Column<int>(type: "integer", nullable: false),
+                    CurrentDuration = table.Column<int>(type: "integer", nullable: true),
                     InsuranceFormRequired = table.Column<bool>(type: "boolean", nullable: false),
                     AgeRequired = table.Column<bool>(type: "boolean", nullable: false),
+                    AgeMinimum = table.Column<int>(type: "integer", nullable: true),
                     InsuranceFormFileUrl = table.Column<string>(type: "text", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
