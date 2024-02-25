@@ -34,9 +34,8 @@ public class ExhibitService : IExhibitService
     {
         foreach (var exhibit in file)
         {
-            exhibit.InitialDuration = exhibit.InitialDuration.ToUniversalTime();
             await _exhibitRepository.AddAsync(exhibit);
-            await _unitOfWork.CompleteAsync();
         }
+        await _unitOfWork.CompleteAsync();
     }
 }
