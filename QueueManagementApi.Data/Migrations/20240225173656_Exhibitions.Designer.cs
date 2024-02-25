@@ -12,8 +12,8 @@ using QueueManagementApi.Infrastructure.Data;
 namespace QueueManagementApi.Infrastructure.Migrations
 {
     [DbContext(typeof(QueueManagementDbContext))]
-    [Migration("20240207003520_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240225173656_Exhibitions")]
+    partial class Exhibitions
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,18 +33,24 @@ namespace QueueManagementApi.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AgeMinimum")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("AgeRequired")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("CurrentDuration")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("InitialDuration")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("InitialDuration")
+                        .HasColumnType("integer");
 
                     b.Property<string>("InsuranceFormFileUrl")
                         .HasColumnType("text");

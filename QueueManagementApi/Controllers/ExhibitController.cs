@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
+using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services;
 using QueueManagementApi.Core.Entities;
+using CsvHelper;
+using System.Globalization;
 
 namespace QueueManagementApi.Controllers;
 
@@ -28,5 +31,53 @@ public class ExhibitController : ApiController
         if (exhibit == null) return NotFound();
         
         return Ok(exhibit);
+    }
+
+    [HttpPost("createSingleExhibit")]
+    public async Task<ActionResult<Exhibit>> CreateExhibit(CreateExhibitDto exhibit)
+    {
+        var exhibitEntity = new Exhibit
+        {
+            Title = exhibit.Title,
+            Description = exhibit.Description,
+            MaxCapacity = exhibit.MaxCapacity,
+            InitialDuration = exhibit.InitialDuration,
+            InsuranceFormRequired = exhibit.InsuranceFormRequired,
+            AgeRequired = exhibit.AgeRequired,
+            InsuranceFormFileUrl = exhibit.InsuranceFormFileUrl,
+        };
+        await _exhibitService.AddSingleExhibit(exhibitEntity);
+        return CreatedAtAction(nameof(GetExhibitById), new { id = exhibitEntity.Id }, exhibitEntity);
+    }
+
+
+    [HttpPost("createMultipleExhibits")]
+    public async Task<ActionResult> CreateMultipleExhibits([FromForm] IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file uploaded.");
+        }
+        if (file.ContentType != "text/csv")
+        {
+            return BadRequest("File is not in the correct format.");
+        }
+
+        List<Exhibit> exhibitsList = new List<Exhibit>();
+        var config = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            MissingFieldFound = null,
+            HeaderValidated = null,
+            BadDataFound = null
+        };
+
+        using (var reader = new StreamReader(file.OpenReadStream()))
+        using (var csv = new CsvReader(reader, config))
+        {
+            exhibitsList = csv.GetRecords<Exhibit>().ToList();
+        }
+        
+        await _exhibitService.AddMultipleExhibits(exhibitsList);
+        return Ok("File is in the correct format and was successfully parsed.");
     }
 }

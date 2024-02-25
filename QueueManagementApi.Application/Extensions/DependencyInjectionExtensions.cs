@@ -7,6 +7,7 @@ using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Infrastructure.Data;
 using QueueManagementApi.Infrastructure.Repositories;
+using QueueManagementApi.Infrastructure.UnitOfWork;
 
 namespace QueueManagementApi.Application.Extensions;
 
@@ -26,5 +27,7 @@ public static class DependencyInjectionExtensions
     public static void AddRepositories(this IServiceCollection services)
     {
         services.AddScoped<IRepository<Exhibit>, GenericRepository<Exhibit>>();
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }
