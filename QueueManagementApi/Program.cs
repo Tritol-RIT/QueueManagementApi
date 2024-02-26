@@ -12,8 +12,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContextCustom(builder.Configuration);
-builder.Services.AddServices(); // add services from application layer
+builder.Services.AddServices(builder.Configuration); // add services from application layer
 builder.Services.AddRepositories();
+
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
@@ -32,6 +34,7 @@ await using (var scope = app.Services.CreateAsyncScope())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
