@@ -11,4 +11,5 @@ public class CreateExhibitDto
     public bool InsuranceFormRequired { get; set; }
     public bool AgeRequired { get; set; }
     public string? InsuranceFormFileUrl { get; set; }
+    public int? AgeMinimum { get; set; }
 }

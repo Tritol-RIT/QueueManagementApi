@@ -45,6 +45,7 @@ public class ExhibitController : ApiController
             InsuranceFormRequired = exhibit.InsuranceFormRequired,
             AgeRequired = exhibit.AgeRequired,
             InsuranceFormFileUrl = exhibit.InsuranceFormFileUrl,
+            AgeMinimum = exhibit.AgeMinimum
         };
         await _exhibitService.AddSingleExhibit(exhibitEntity);
         return CreatedAtAction(nameof(GetExhibitById), new { id = exhibitEntity.Id }, exhibitEntity);
