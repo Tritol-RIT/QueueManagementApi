@@ -38,4 +38,10 @@ public class ExhibitService : IExhibitService
         }
         await _unitOfWork.CompleteAsync();
     }
+
+    public async Task UpdateSingleExhibit(Exhibit exhibit)
+    {
+        _exhibitRepository.Update(exhibit);
+        await _unitOfWork.CompleteAsync();
+    }
 }
