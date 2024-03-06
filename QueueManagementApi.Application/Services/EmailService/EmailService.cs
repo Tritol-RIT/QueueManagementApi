@@ -15,13 +15,10 @@ public class EmailService : IEmailService
     private const int _smtpPort = 587;
     private const string _smtpUsername = "denivetoni@gmail.com";
     private const string _smtpPassword = "rgapduuvyqjzghkk";
-    string relativePathAttachment= @".\..\..\..\QueueManagementApi.Application\EmailTemplates\test.txt";
+    string relativePathAttachment= @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\test.txt";
     
     string relativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\UserCreationEmailTemplate.cshtml";
-    IEmailTemplateRenderer _emailTemplate = new IEmailTemplateRenderer(new RazorLightEngineBuilder()
-    .UseFileSystemProject(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
-    .UseMemoryCachingProvider()
-    .Build());
+    IEmailTemplateRenderer _emailTemplate = new IEmailTemplateRenderer();
 
     public async Task SendEmailAsync(string email, string subject, string body)
     {

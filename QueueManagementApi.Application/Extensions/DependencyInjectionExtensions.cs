@@ -40,6 +40,8 @@ public static class DependencyInjectionExtensions
         services.Configure<TokenSettings>(x => configuration.GetSection("TokenSettings").Get<TokenSettings>());
 
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailTemplateRenderer>();
+        services.AddScoped<EmailService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)

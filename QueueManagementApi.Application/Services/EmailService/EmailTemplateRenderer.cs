@@ -1,9 +1,5 @@
 ﻿using RazorLight;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace QueueManagementApi.Application.Services.EmailService
 {
@@ -11,9 +7,12 @@ namespace QueueManagementApi.Application.Services.EmailService
     {
         private readonly IRazorLightEngine _razorEngine;
 
-        public IEmailTemplateRenderer(IRazorLightEngine razorEngine)
+        public IEmailTemplateRenderer()
         {
-            _razorEngine = razorEngine;
+            _razorEngine = new RazorLightEngineBuilder()
+                .UseFileSystemProject(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))
+                .UseMemoryCachingProvider()
+                .Build();
         }
 
         public async Task<string> RenderEmailTemplateAsync<TModel>(string templatePath, TModel model)
