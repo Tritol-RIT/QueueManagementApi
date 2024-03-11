@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.AuthService;
@@ -36,9 +37,19 @@ public class LoginController : ApiController
     }
 
     [HttpPost("signup/create")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserDto newUser)
     {
         var newUserCreated = await _authService.CreateUser(newUser);
         return Ok(newUserCreated);
+    }
+
+    [HttpPut("email/{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto userUpdateDTO)
+    {
+        var result = await _authService.UpdateUserAsync(id, userUpdateDTO);
+
+        return Ok(result);
     }
 }

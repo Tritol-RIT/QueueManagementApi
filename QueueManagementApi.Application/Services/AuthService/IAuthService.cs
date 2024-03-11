@@ -8,4 +8,5 @@ public interface IAuthService
     Task<string> LoginAsync(string email, string password);
 
     Task<User> CreateUser(CreateUserDto  createUserDto);
+    Task<User?> UpdateUserAsync(int id, UserUpdateDto userUpdateDto);
 }
