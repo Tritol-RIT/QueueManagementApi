@@ -49,7 +49,7 @@ public class EmailService : IEmailService
         }
     }
 
-    public async Task SendEmailUserAsync(string email, string subject, User model)
+    public async Task SendEmailUserAsync(string email, string subject, User model, string rawPassword)
     {
         string templatePath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),relativePathTemplate);
 
@@ -65,7 +65,7 @@ public class EmailService : IEmailService
                 client.EnableSsl = true;
                 client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
 
-
+                model.PasswordHash = rawPassword;
                 using (var message = new MailMessage(
                     from: new MailAddress(_smtpUsername, "RITK Queue Management"),
                     to: new MailAddress(email, $"{model.FirstName} {model.LastName}")))

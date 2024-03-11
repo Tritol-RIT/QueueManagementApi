@@ -6,6 +6,7 @@ using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Infrastructure.Data;
+using QueueManagementApi.Middlewares;
 using QueueManagementApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -99,6 +100,8 @@ await using (var scope = app.Services.CreateAsyncScope())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

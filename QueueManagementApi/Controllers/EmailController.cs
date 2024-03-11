@@ -15,7 +15,7 @@ public class EmailController : ApiController
     [HttpPost("sendUserEmail")]
     public async Task<ActionResult> SendEmailUser(string email, string subject, User user)
     {
-        await _emailService.SendEmailUserAsync(email, subject, user);
+        await _emailService.SendEmailUserAsync(email, subject, user, "test");
         return Ok();
     }
     [HttpPost("sendEmail")]

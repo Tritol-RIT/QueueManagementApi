@@ -10,6 +10,6 @@ namespace QueueManagementApi.Application.Services.EmailService
     public interface IEmailService
     {
         Task SendEmailAsync(string email, string subject, string body);
-        Task SendEmailUserAsync(string email, string subject, User User);
+        Task SendEmailUserAsync(string email, string subject, User model, string rawPassword);
     }
 }
