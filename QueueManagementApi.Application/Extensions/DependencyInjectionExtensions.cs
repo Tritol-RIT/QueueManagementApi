@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using QueueManagementApi.Application.Models;
-using QueueManagementApi.Application.Services;
 using QueueManagementApi.Application.Services.AuthService;
 using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Application.Services.TokenService;
@@ -19,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.EmailService;
+using QueueManagementApi.Application.Services.ExhibitService;
 
 namespace QueueManagementApi.Application.Extensions;
 
