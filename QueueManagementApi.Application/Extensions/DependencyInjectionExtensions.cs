@@ -16,6 +16,7 @@ using QueueManagementApi.Infrastructure.UnitOfWork;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using QueueManagementApi.Application.Services.EmailService;
 
 namespace QueueManagementApi.Application.Extensions;
 
@@ -34,8 +35,13 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEncryptionService, EncryptionService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
+        
 
         services.Configure<TokenSettings>(x => configuration.GetSection("TokenSettings").Get<TokenSettings>());
+
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailTemplateRenderer>();
+        services.AddScoped<EmailService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)
