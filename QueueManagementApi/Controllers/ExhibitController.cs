@@ -5,6 +5,7 @@ using QueueManagementApi.Application.Services;
 using QueueManagementApi.Core.Entities;
 using CsvHelper;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace QueueManagementApi.Controllers;
 
@@ -34,6 +35,7 @@ public class ExhibitController : ApiController
     }
 
     [HttpPost("createSingleExhibit")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<Exhibit>> CreateExhibit(CreateExhibitDto exhibit)
     {
         var exhibitEntity = new Exhibit
