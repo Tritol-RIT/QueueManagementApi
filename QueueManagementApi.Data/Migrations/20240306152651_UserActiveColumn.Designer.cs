@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using QueueManagementApi.Infrastructure.Data;
@@ -11,9 +12,11 @@ using QueueManagementApi.Infrastructure.Data;
 namespace QueueManagementApi.Infrastructure.Migrations
 {
     [DbContext(typeof(QueueManagementDbContext))]
-    partial class QueueManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240306152651_UserActiveColumn")]
+    partial class UserActiveColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

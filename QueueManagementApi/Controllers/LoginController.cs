@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.AuthService;
+using QueueManagementApi.Core;
 
 namespace QueueManagementApi.Controllers;
 
@@ -31,5 +33,12 @@ public class LoginController : ApiController
         {
             return Unauthorized("Invalid credentials.");
         }
+    }
+
+    [HttpPost("signup/create")]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserDto newUser)
+    {
+        var newUserCreated = await _authService.CreateUser(newUser);
+        return Ok(newUserCreated);
     }
 }
