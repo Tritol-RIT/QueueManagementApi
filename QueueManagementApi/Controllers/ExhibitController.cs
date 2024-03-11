@@ -82,4 +82,76 @@ public class ExhibitController : ApiController
         await _exhibitService.AddMultipleExhibits(exhibitsList);
         return Ok("File is in the correct format and was successfully parsed.");
     }
+
+    [HttpPut("updateSingleExhibit")]
+    public async Task<ActionResult<Exhibit>> UpdateExhibit(int id, UpdateExhibitDto updatedExhibit)
+    {
+        var exhibit = await _exhibitService.GetExhibitById(id);
+        if (exhibit == null) return NotFound();
+
+        var initialState = new
+        {
+            exhibit.Title,
+            exhibit.Description,
+            exhibit.MaxCapacity,
+            exhibit.InitialDuration,
+            exhibit.InsuranceFormRequired,
+            exhibit.AgeRequired,
+            exhibit.InsuranceFormFileUrl
+        };
+
+        if (!string.IsNullOrEmpty(updatedExhibit.Title))
+        {
+            exhibit.Title = updatedExhibit.Title;
+        }
+
+        if (!string.IsNullOrEmpty(updatedExhibit.Description))
+        {
+            exhibit.Description = updatedExhibit.Description;
+        }
+
+        if (updatedExhibit.MaxCapacity.HasValue)
+        {
+            exhibit.MaxCapacity = updatedExhibit.MaxCapacity.Value;
+        }
+
+        if (updatedExhibit.InitialDuration.HasValue)
+        {
+            exhibit.InitialDuration = updatedExhibit.InitialDuration.Value;
+        }
+
+        if (updatedExhibit.InsuranceFormRequired.HasValue)
+        {
+            exhibit.InsuranceFormRequired = updatedExhibit.InsuranceFormRequired.Value;
+        }
+
+        if (updatedExhibit.AgeRequired.HasValue)
+        {
+            exhibit.AgeRequired = updatedExhibit.AgeRequired.Value;
+        }
+
+        if (!string.IsNullOrEmpty(updatedExhibit.InsuranceFormFileUrl)) 
+        {
+            exhibit.InsuranceFormFileUrl = updatedExhibit.InsuranceFormFileUrl;
+        }
+
+        var updatedState = new
+        {
+            exhibit.Title,
+            exhibit.Description,
+            exhibit.MaxCapacity,
+            exhibit.InitialDuration,
+            exhibit.InsuranceFormRequired,
+            exhibit.AgeRequired,
+            exhibit.InsuranceFormFileUrl
+        };
+
+        if (initialState.Equals(updatedState))
+        {
+            return BadRequest("No updates were necessary for this exhibit.");
+        }
+
+        await _exhibitService.UpdateSingleExhibit(exhibit);
+        return Ok(exhibit);
+    }
 }

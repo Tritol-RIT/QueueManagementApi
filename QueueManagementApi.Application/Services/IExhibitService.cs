@@ -10,4 +10,6 @@ public interface IExhibitService
     Task AddSingleExhibit(Exhibit exhibit);
 
     Task AddMultipleExhibits(List<Exhibit> file);
+
+    Task UpdateSingleExhibit(Exhibit exhibit);
 }
