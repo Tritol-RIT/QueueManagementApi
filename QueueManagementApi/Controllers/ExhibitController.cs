@@ -87,6 +87,17 @@ public class ExhibitController : ApiController
         var exhibit = await _exhibitService.GetExhibitById(id);
         if (exhibit == null) return NotFound();
 
+        var initialState = new
+        {
+            exhibit.Title,
+            exhibit.Description,
+            exhibit.MaxCapacity,
+            exhibit.InitialDuration,
+            exhibit.InsuranceFormRequired,
+            exhibit.AgeRequired,
+            exhibit.InsuranceFormFileUrl
+        };
+
         if (!string.IsNullOrEmpty(updatedExhibit.Title))
         {
             exhibit.Title = updatedExhibit.Title;
@@ -120,6 +131,22 @@ public class ExhibitController : ApiController
         if (!string.IsNullOrEmpty(updatedExhibit.InsuranceFormFileUrl)) 
         {
             exhibit.InsuranceFormFileUrl = updatedExhibit.InsuranceFormFileUrl;
+        }
+
+        var updatedState = new
+        {
+            exhibit.Title,
+            exhibit.Description,
+            exhibit.MaxCapacity,
+            exhibit.InitialDuration,
+            exhibit.InsuranceFormRequired,
+            exhibit.AgeRequired,
+            exhibit.InsuranceFormFileUrl
+        };
+
+        if (initialState.Equals(updatedState))
+        {
+            return BadRequest("No updates were necessary for this exhibit.");
         }
 
         await _exhibitService.UpdateSingleExhibit(exhibit);
