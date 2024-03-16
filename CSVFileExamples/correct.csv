@@ -1,4 +1,4 @@
-Title,Description,Capacity,InitialDuration,InsuranceFormRequired,AgeRequired
-"Exhibit 1","This is a description for Exhibit 1",100,"2024-02-14T17:44:23.294Z",true,false
-"Exhibit 2","This is a description for Exhibit 2",200,"2024-02-14T17:44:23.294Z",false,true
-"Exhibit 3","This is a description for Exhibit 3",150,"2024-02-14T17:44:23.294Z",true,true  
+Title,Description,Maximum # of people at once,Expected duration,Is insurance form release required,Is age required,Minimum Age
+Exhibit 1,This is a description for Exhibit 1,100,15,no,yes,18
+Exhibit 2,This is a description for Exhibit 2,200,25,no,no
+Exhibit 3,This is a description for Exhibit 3,150,5,no,no

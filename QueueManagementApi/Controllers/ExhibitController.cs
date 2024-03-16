@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
+﻿using CsvHelper;
+using Microsoft.AspNetCore.Mvc;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services;
 using QueueManagementApi.Core.Entities;
-using CsvHelper;
+using QueueManagementApi.Core.Validators;
 using System.Globalization;
 
 namespace QueueManagementApi.Controllers;
@@ -29,7 +29,7 @@ public class ExhibitController : ApiController
     {
         var exhibit = await _exhibitService.GetExhibitById(id);
         if (exhibit == null) return NotFound();
-        
+
         return Ok(exhibit);
     }
 
@@ -44,7 +44,6 @@ public class ExhibitController : ApiController
             InitialDuration = exhibit.InitialDuration,
             InsuranceFormRequired = exhibit.InsuranceFormRequired,
             AgeRequired = exhibit.AgeRequired,
-            InsuranceFormFileUrl = exhibit.InsuranceFormFileUrl,
             AgeMinimum = exhibit.AgeMinimum
         };
         await _exhibitService.AddSingleExhibit(exhibitEntity);
@@ -71,13 +70,34 @@ public class ExhibitController : ApiController
             HeaderValidated = null,
             BadDataFound = null
         };
-
-        using (var reader = new StreamReader(file.OpenReadStream()))
-        using (var csv = new CsvReader(reader, config))
+        try
         {
-            exhibitsList = csv.GetRecords<Exhibit>().ToList();
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            using (var csv = new CsvReader(reader, config))
+            {
+                csv.Context.RegisterClassMap<ExhibitMap>();
+                exhibitsList = csv.GetRecords<Exhibit>().ToList();
+            }
         }
-        
+        catch (Exception ex)
+        {
+            return BadRequest($"Error parsing the file: {ex.Message}");
+        }
+
+
+        string validationError = string.Empty;
+        for (int i = 0; i < exhibitsList.Count; i++)
+        {
+            string singleError = exhibitsList[i].Validate();
+            if (!string.IsNullOrWhiteSpace(singleError))
+                validationError += $"Errors at row {i + 1}: {singleError}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(validationError))
+        {
+            return BadRequest(validationError);
+        }
+
         await _exhibitService.AddMultipleExhibits(exhibitsList);
         return Ok("File is in the correct format and was successfully parsed.");
     }
