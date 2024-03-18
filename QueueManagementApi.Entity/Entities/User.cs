@@ -1,6 +1,6 @@
-﻿using QueueManagementApi.Core;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace QueueManagementApi.Core.Entities;
 
@@ -16,23 +16,33 @@ public class User : BaseEntity, IAuditable
 
     [Required]
     [StringLength(255)]
+    [EmailAddress]
     public string Email { get; set; }
 
+    // Don't store plain passwords. This field should store a hash.
     [Required]
-    [StringLength(15)]
-    public string Password { get; set; }
+    [JsonIgnore]
+    public string PasswordHash { get; set; }
 
+    // Role as enum
     [Required]
-    [StringLength(1)]
-    public char Role { get; set; } // change this to enum?
+    public UserRole Role { get; set; } // Assuming UserRole is an enum
 
-    public DateTime CreatedOn { get; set; } = DateTime.Now;
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
     public DateTime? UpdatedOn { get; set; }
-
-    [Required]
+    
     public int? ExhibitId { get; set; }
 
     [ForeignKey(nameof(ExhibitId))]
     public virtual Exhibit? Exhibit { get; set; }
+
+    public bool Active { get; set; } = true;
+}
+
+public enum UserRole
+{
+    Admin,
+    Staff,
+    Committee
 }

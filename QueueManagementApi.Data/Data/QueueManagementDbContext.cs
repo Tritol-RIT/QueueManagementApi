@@ -1,7 +1,9 @@
 ﻿
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using QueueManagementApi.Core.Entities;
+using QueueManagementApi.Infrastructure.Interceptors;
 
 namespace QueueManagementApi.Infrastructure.Data;
 
@@ -25,5 +27,20 @@ public class QueueManagementDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         // Model configurations...
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasOne(e => e.Exhibit) // Specifies the navigation property to the Exhibit entity
+                .WithMany(x => x.Users) // Exhibit does not have a navigation property back to User
+                .HasForeignKey(e => e.ExhibitId) // Specifies the foreign key property in the User entity
+                .IsRequired(false); // Makes the foreign key optional
+        });
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddInterceptors(new AuditableInterceptor());
+
+        base.OnConfiguring(optionsBuilder);
     }
 }

@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            border: 5px solid #F76902;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #f4f4f4;
+            ;
+            color: #0a0a0a;
+            padding: 20px;
+            border-radius: 3px 3px 0 0;
+        }
+
+            .header h1 {
+                margin: 0;
+                font-size: 24px;
+                text-align: left;
+            }
+
+        .email-body {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .footer {
+            background-color: #f4f4f4;
+            color: #888888;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <!-- Only "ImagineRIT" is in orange -->
+            <h1 style="text-align:center">Welcome to <span style="color: #F76902;">ImagineRIT</span> Queue Management System!</h1>
+        </div>
+        <div class="email-body">
+            <p>Hi <span style="font-weight:bold"> @Model.FirstName @Model.LastName</span>,</p>
+            <p>Welcome aboard! We're excited to have you as part of our community.</p>
+            <p>See creativity and innovation come to life!</p>
+            <p>Below are your login credentials:</p>
+            <p>
+                <strong>Email:</strong> @Model.Email<br>
+                <strong>Password:</strong> @Model.PasswordHash<br>
+                <strong>Role:</strong> @Model.Role
+            </p>
+
+            <!-- Below is where the QR Code will appear -->
+            <img src="data:image/png;base64,@Model.QrCodeBase64" alt="QR Code">
+
+        </div>
+        <div class="footer">
+            From the Best Team around <br>TRITOL
+        </div>
+    </div>
+</body>
+</html>
+

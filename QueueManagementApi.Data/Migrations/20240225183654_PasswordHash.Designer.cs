@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using QueueManagementApi.Infrastructure.Data;
@@ -11,9 +12,11 @@ using QueueManagementApi.Infrastructure.Data;
 namespace QueueManagementApi.Infrastructure.Migrations
 {
     [DbContext(typeof(QueueManagementDbContext))]
-    partial class QueueManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240225183654_PasswordHash")]
+    partial class PasswordHash
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,9 +152,6 @@ namespace QueueManagementApi.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
@@ -161,6 +161,7 @@ namespace QueueManagementApi.Infrastructure.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<int?>("ExhibitId")
+                        .IsRequired()
                         .HasColumnType("integer");
 
                     b.Property<string>("FirstName")
@@ -304,7 +305,9 @@ namespace QueueManagementApi.Infrastructure.Migrations
                 {
                     b.HasOne("QueueManagementApi.Core.Entities.Exhibit", "Exhibit")
                         .WithMany("Users")
-                        .HasForeignKey("ExhibitId");
+                        .HasForeignKey("ExhibitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Exhibit");
                 });

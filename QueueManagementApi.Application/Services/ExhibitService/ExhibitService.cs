@@ -2,7 +2,7 @@
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Interfaces;
 
-namespace QueueManagementApi.Application.Services;
+namespace QueueManagementApi.Application.Services.ExhibitService;
 
 public class ExhibitService : IExhibitService
 {
@@ -36,6 +36,12 @@ public class ExhibitService : IExhibitService
         {
             await _exhibitRepository.AddAsync(exhibit);
         }
+        await _unitOfWork.CompleteAsync();
+    }
+
+    public async Task UpdateSingleExhibit(Exhibit exhibit)
+    {
+        _exhibitRepository.Update(exhibit);
         await _unitOfWork.CompleteAsync();
     }
 }
