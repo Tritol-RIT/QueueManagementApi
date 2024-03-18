@@ -64,6 +64,10 @@
                 <strong>Password:</strong> @Model.PasswordHash<br>
                 <strong>Role:</strong> @Model.Role
             </p>
+
+            <!-- Below is where the QR Code will appear -->
+            <img src="data:image/png;base64,@Model.QrCodeBase64" alt="QR Code">
+
         </div>
         <div class="footer">
             From the Best Team around <br>TRITOL
