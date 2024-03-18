@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using QueueManagementApi.Application.Dtos;
-using QueueManagementApi.Application.Services;
 using QueueManagementApi.Core.Entities;
 using CsvHelper;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using QueueManagementApi.Application.Services.ExhibitService;
 
 namespace QueueManagementApi.Controllers;
 

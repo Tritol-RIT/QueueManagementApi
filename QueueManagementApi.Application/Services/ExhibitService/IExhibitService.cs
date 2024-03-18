@@ -1,7 +1,7 @@
 ﻿using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Core.Entities;
 
-namespace QueueManagementApi.Application.Services;
+namespace QueueManagementApi.Application.Services.ExhibitService;
 
 public interface IExhibitService
 {

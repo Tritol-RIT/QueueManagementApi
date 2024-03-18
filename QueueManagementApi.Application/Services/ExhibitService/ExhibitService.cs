@@ -2,7 +2,7 @@
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Interfaces;
 
-namespace QueueManagementApi.Application.Services;
+namespace QueueManagementApi.Application.Services.ExhibitService;
 
 public class ExhibitService : IExhibitService
 {
