@@ -1,11 +1,13 @@
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using QueueManagementApi.Application.Extensions;
 using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Infrastructure.Data;
+using QueueManagementApi.JsonConverters;
 using QueueManagementApi.Middlewares;
 using QueueManagementApi.Validators;
 
@@ -13,7 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+{
+    // Add the PagedListConverter to the converters list
+    options.SerializerSettings.Converters.Add(new PagedListConverter());
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+});
+;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
