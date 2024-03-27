@@ -125,8 +125,8 @@ public class AuthService : IAuthService
         var userToUpdate = setPasswordToken.User;
 
         userToUpdate.PasswordHash = _encryptionService.HashPassword(newPassword);
-        userToUpdate.Active = true;
-        setPasswordToken.Active = false;
+        userToUpdate.Active = true; // activate user
+        setPasswordToken.Active = false; // deactivate token so it is not used twice
 
         _userRepository.Update(userToUpdate);
         _unitOfWork.Repository<SetPasswordToken>().Update(setPasswordToken);

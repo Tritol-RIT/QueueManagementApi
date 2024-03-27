@@ -20,6 +20,7 @@ using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Application.Services.ExhibitService;
 using QueueManagementApi.Application.Services.SetPasswordTokenService;
+using QueueManagementApi.Infrastructure.Services.FileService;
 
 namespace QueueManagementApi.Application.Extensions;
 
@@ -48,6 +49,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IEmailTemplateRenderer>();
         services.AddScoped<EmailService>();
+
+        services.AddScoped<IFileService, LocalFileService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)
