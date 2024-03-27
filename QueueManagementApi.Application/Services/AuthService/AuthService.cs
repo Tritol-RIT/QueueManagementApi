@@ -2,6 +2,7 @@
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Application.Services.EncryptionService;
+using QueueManagementApi.Application.Services.SetPasswordTokenService;
 using QueueManagementApi.Application.Services.TokenService;
 using QueueManagementApi.Core;
 using QueueManagementApi.Core.Entities;
@@ -16,14 +17,16 @@ public class AuthService : IAuthService
     private readonly IEncryptionService _encryptionService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailService _emailService;
+    private readonly ISetPasswordTokenService _setPasswordTokenService;
 
-    public AuthService(IRepository<User> userRepository, ITokenService tokenService, IEncryptionService encryptionService, IUnitOfWork unitOfWork, IEmailService emailService)
+    public AuthService(ITokenService tokenService, IEncryptionService encryptionService, IUnitOfWork unitOfWork, IEmailService emailService, ISetPasswordTokenService setPasswordTokenService)
     {
-        _userRepository = userRepository;
+        _userRepository = unitOfWork.Repository<User>();
         _tokenService = tokenService;
-        _encryptionService = encryptionService;
         _unitOfWork = unitOfWork;
+        _encryptionService = encryptionService;
         _emailService = emailService;
+        _setPasswordTokenService = setPasswordTokenService;
     }
 
     public async Task<string> LoginAsync(string email, string password)
@@ -54,23 +57,31 @@ public class AuthService : IAuthService
                 throw new QueueApiException("Exhibit for staff does not exist");
         }
 
-        var userPassword = _encryptionService.GenerateRandomPassword();
-
         var newUser = new User
         {
             Email = createUserDto.Email,
             FirstName = createUserDto.Name,
             LastName = createUserDto.Surname,
             ExhibitId = createUserDto.ExhibitId,
-            PasswordHash = _encryptionService.HashPassword(userPassword),
-            Role = createUserDto.UserRole
+            Role = createUserDto.UserRole,
+            Active = false // turn to true after user sets a password
         };
 
         await _userRepository.AddAsync(newUser);
-        await _unitOfWork.CompleteAsync();
 
+        var setPasswordToken = new SetPasswordToken()
+            {
+                User = newUser,
+                ExpirationDate = DateTime.UtcNow.AddMinutes(15),
+                Token = Guid.NewGuid().ToString(),
+                Active = true
+            };
+
+        await _unitOfWork.Repository<SetPasswordToken>().AddAsync(setPasswordToken);
+
+        await _unitOfWork.CompleteAsync();
         // send email here
-        await _emailService.SendEmailUserAsync(createUserDto.Email, "New User", newUser, userPassword);
+        await _emailService.SendEmailUserAsync(createUserDto.Email, "New User", newUser, setPasswordToken.Token);
 
         return newUser;
     }
@@ -82,6 +93,16 @@ public class AuthService : IAuthService
             throw new QueueApiException("User was not found");
 
         user.Active = userUpdateDto.Active;
+        if (user.ExhibitId != userUpdateDto.ExhibitId)
+        {
+            var exhibitExists = await
+                _unitOfWork.Repository<Exhibit>()
+                    .FindByCondition(x => x.Id == userUpdateDto.ExhibitId)
+                    .AnyAsync();
+            if (!exhibitExists)
+                throw new QueueApiException("Exhibit for staff does not exist");
+        }
+
         user.ExhibitId = userUpdateDto.ExhibitId;
         user.FirstName = userUpdateDto.FirstName;
         user.LastName = userUpdateDto.LastName;
@@ -90,5 +111,26 @@ public class AuthService : IAuthService
         await _unitOfWork.CompleteAsync();
 
         return user;
+    }
+
+    public async Task SetPassword(string token, string newPassword)
+    {
+        var tokenIsValid = await _setPasswordTokenService.ValidateAsync(token);
+
+        if (!tokenIsValid) 
+            throw new QueueApiException("This link is expired, request new password again!");
+
+        var setPasswordToken = await _unitOfWork.Repository<SetPasswordToken>().FindByCondition(x => x.Token == token).Include(x => x.User).FirstAsync();
+
+        var userToUpdate = setPasswordToken.User;
+
+        userToUpdate.PasswordHash = _encryptionService.HashPassword(newPassword);
+        userToUpdate.Active = true;
+        setPasswordToken.Active = false;
+
+        _userRepository.Update(userToUpdate);
+        _unitOfWork.Repository<SetPasswordToken>().Update(setPasswordToken);
+
+        await _unitOfWork.CompleteAsync();
     }
 }

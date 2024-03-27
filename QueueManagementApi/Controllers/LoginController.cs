@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.AuthService;
+using QueueManagementApi.Application.Services.SetPasswordTokenService;
 using QueueManagementApi.Core;
 
 namespace QueueManagementApi.Controllers;
@@ -10,10 +11,12 @@ namespace QueueManagementApi.Controllers;
 public class LoginController : ApiController
 {
     private readonly IAuthService _authService;
+    private readonly ISetPasswordTokenService _setPasswordTokenService;
 
-    public LoginController(IAuthService authService)
+    public LoginController(IAuthService authService, ISetPasswordTokenService setPasswordTokenService)
     {
         _authService = authService;
+        _setPasswordTokenService = setPasswordTokenService;
     }
 
     [HttpPost("login")]
@@ -52,4 +55,16 @@ public class LoginController : ApiController
 
         return Ok(result);
     }
+
+    [HttpPut("set-password/{token}")]
+    public async Task<IActionResult> SetPassword(string token, string newPassword)
+    {
+        // Donat shto validime ne password, ma shum se 8 karaktera, shkronja, numra,etj. ti e din
+        // if (not valid passwordi)
+        //     return BadRequest("Password not valid");
+        await _authService.SetPassword(token, newPassword);
+
+        return Ok("New Password Set Successfully");
+    }
+
 }

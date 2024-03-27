@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Application.Services.ExhibitService;
+using QueueManagementApi.Application.Services.SetPasswordTokenService;
 
 namespace QueueManagementApi.Application.Extensions;
 
@@ -37,6 +38,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IEncryptionService, EncryptionService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<ISetPasswordTokenService, SetPasswordTokenService>();
         
 
         services.Configure<TokenSettings>(configuration.GetSection("TokenSettings"));
