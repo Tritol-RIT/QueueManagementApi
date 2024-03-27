@@ -1,7 +1,4 @@
-﻿
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+﻿using Microsoft.EntityFrameworkCore;
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Infrastructure.Interceptors;
 
@@ -21,6 +18,7 @@ public class QueueManagementDbContext : DbContext
     public DbSet<Group> Groups { get; set; }
     public DbSet<ExhibitImage> ExhibitImages { get; set; }
     public DbSet<Insurance> Insurances { get; set; }
+    public DbSet<SetPasswordToken> SetPasswordTokens { get; set; }
 
     // Override OnModelCreating if we need it
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,13 +26,8 @@ public class QueueManagementDbContext : DbContext
         base.OnModelCreating(modelBuilder);
         // Model configurations...
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasOne(e => e.Exhibit) // Specifies the navigation property to the Exhibit entity
-                .WithMany(x => x.Users) // Exhibit does not have a navigation property back to User
-                .HasForeignKey(e => e.ExhibitId) // Specifies the foreign key property in the User entity
-                .IsRequired(false); // Makes the foreign key optional
-        });
+        modelBuilder.Entity<SetPasswordToken>()
+            .HasIndex(x => x.Token);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

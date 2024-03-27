@@ -58,16 +58,12 @@
             <p>Hi <span style="font-weight:bold"> @Model.FirstName @Model.LastName</span>,</p>
             <p>Welcome aboard! We're excited to have you as part of our community.</p>
             <p>See creativity and innovation come to life!</p>
-            <p>Below are your login credentials:</p>
+            <p>Click Below to set your password:</p>
             <p>
                 <strong>Email:</strong> @Model.Email<br>
-                <strong>Password:</strong> @Model.PasswordHash<br>
+                <a href="@Model.PasswordSetTokenLink"><strong>Set Password</strong></a><br>
                 <strong>Role:</strong> @Model.Role
             </p>
-
-            <!-- Below is where the QR Code will appear -->
-            <img src="data:image/png;base64,@Model.QrCodeBase64" alt="QR Code">
-
         </div>
         <div class="footer">
             From the Best Team around <br>TRITOL

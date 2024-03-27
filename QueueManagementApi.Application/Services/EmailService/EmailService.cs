@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Razor;
 using RazorLight;
 using System.Reflection;
 using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using QRCoder;
+using QueueManagementApi.Application.Dtos;
 
 namespace QueueManagementApi.Application.Services.EmailService;
 
@@ -15,10 +19,18 @@ public class EmailService : IEmailService
     private const int _smtpPort = 587;
     private const string _smtpUsername = "denivetoni@gmail.com";
     private const string _smtpPassword = "rgapduuvyqjzghkk";
-    string relativePathAttachment= @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\test.txt";
-    
-    string relativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\UserCreationEmailTemplate.cshtml";
-    IEmailTemplateRenderer _emailTemplate = new IEmailTemplateRenderer();
+    private const string relativePathAttachment = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\test.txt";
+
+    private const string relativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\UserCreationEmailTemplate.cshtml";
+
+    private readonly IEmailTemplateRenderer _emailTemplate;
+    private readonly IConfiguration _configuration;
+
+    public EmailService(IEmailTemplateRenderer emailTemplate, IConfiguration configuration)
+    {
+        _emailTemplate = emailTemplate;
+        _configuration = configuration;
+    }
 
     public async Task SendEmailAsync(string email, string subject, string body)
     {
@@ -49,37 +61,42 @@ public class EmailService : IEmailService
         }
     }
 
-    public async Task SendEmailUserAsync(string email, string subject, User model, string rawPassword)
+    public async Task SendEmailUserAsync(string email, string subject, User model, string setPasswordToken)
     {
         string templatePath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),relativePathTemplate);
-
+        var applicationDomain = _configuration.GetValue<string>("ApplicationDomain");
         try
         {
+            using var client = new SmtpClient();
+            client.Host = _smtpServer;
+            client.Port = _smtpPort;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
 
-            using (var client = new SmtpClient())
+
+            using var message = new MailMessage(
+                from: new MailAddress(_smtpUsername, "RITK Queue Management"),
+                to: new MailAddress(email, $"{model.FirstName} {model.LastName}"));
+
+            message.IsBodyHtml = true;
+            message.Subject = subject;
+
+            var emailModel = new CreateUserEmailDto
             {
-                client.Host = _smtpServer;
-                client.Port = _smtpPort;
-                client.DeliveryMethod = SmtpDeliveryMethod.Network;
-                client.UseDefaultCredentials = false;
-                client.EnableSsl = true;
-                client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                PasswordSetTokenLink = $"{applicationDomain}/set-password/{setPasswordToken}",
+                Role = model.Role
+            };
 
-                model.PasswordHash = rawPassword;
-                using (var message = new MailMessage(
-                    from: new MailAddress(_smtpUsername, "RITK Queue Management"),
-                    to: new MailAddress(email, $"{model.FirstName} {model.LastName}")))
-                {
-                    message.IsBodyHtml = true;
-                    message.Subject = subject;
+            var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, emailModel);
 
-                    var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, model);
+            message.Body = emailBody;
 
-                    message.Body = emailBody;
-
-                    await client.SendMailAsync(message);
-                }
-            }
+            await client.SendMailAsync(message);
         }
         catch (Exception ex)
         {

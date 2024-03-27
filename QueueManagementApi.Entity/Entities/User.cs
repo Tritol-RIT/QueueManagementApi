@@ -20,9 +20,8 @@ public class User : BaseEntity, IAuditable
     public string Email { get; set; }
 
     // Don't store plain passwords. This field should store a hash.
-    [Required]
     [JsonIgnore]
-    public string PasswordHash { get; set; }
+    public string? PasswordHash { get; set; }
 
     // Role as enum
     [Required]
