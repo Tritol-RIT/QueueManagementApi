@@ -1,26 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
+using Microsoft.IdentityModel.Tokens;
 using QueueManagementApi.Application.Models;
 using QueueManagementApi.Application.Services.AuthService;
+using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Application.Services.EncryptionService;
+using QueueManagementApi.Application.Services.ExhibitService;
+using QueueManagementApi.Application.Services.SetPasswordTokenService;
 using QueueManagementApi.Application.Services.TokenService;
+using QueueManagementApi.Application.Services.UserService;
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Infrastructure.Data;
 using QueueManagementApi.Infrastructure.Repositories;
+using QueueManagementApi.Infrastructure.Services.FileService;
 using QueueManagementApi.Infrastructure.UnitOfWork;
 using System.Text;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using QueueManagementApi.Application.Dtos;
-using QueueManagementApi.Application.Services.EmailService;
-using QueueManagementApi.Application.Services.ExhibitService;
-using QueueManagementApi.Application.Services.SetPasswordTokenService;
-using QueueManagementApi.Infrastructure.Services.FileService;
 
 namespace QueueManagementApi.Application.Extensions;
 
@@ -38,6 +35,7 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<IEncryptionService, EncryptionService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ISetPasswordTokenService, SetPasswordTokenService>();
         
@@ -86,6 +84,19 @@ public static class DependencyInjectionExtensions
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
                 ValidateAudience = false
+            };
+            x.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = context =>
+                {
+                    var tokenClaims = context.Principal?.Claims;
+                    var tokenType = tokenClaims?.FirstOrDefault(c => c.Type == "tokenType")?.Value;
+
+                    if (tokenType == "refresh")
+                        context.Fail("Refresh token used in access token context.");
+                    
+                    return Task.CompletedTask;
+                }
             };
         });
     }
