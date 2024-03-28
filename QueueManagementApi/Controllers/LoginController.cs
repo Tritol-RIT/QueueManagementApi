@@ -1,21 +1,19 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using QueueManagementApi.Application.Dtos;
+using Microsoft.IdentityModel.Tokens;
+using QueueManagementApi.Application.Models;
 using QueueManagementApi.Application.Services.AuthService;
-using QueueManagementApi.Application.Services.SetPasswordTokenService;
+using QueueManagementApi.Core.Extensions;
 
 namespace QueueManagementApi.Controllers;
 
 public class LoginController : ApiController
 {
     private readonly IAuthService _authService;
-    private readonly ISetPasswordTokenService _setPasswordTokenService;
 
-    public LoginController(IAuthService authService, ISetPasswordTokenService setPasswordTokenService)
+    public LoginController(IAuthService authService)
     {
         _authService = authService;
-        _setPasswordTokenService = setPasswordTokenService;
     }
 
     [HttpPost]
@@ -28,9 +26,13 @@ public class LoginController : ApiController
 
         try
         {
-            var token = await _authService.LoginAsync(request.Email, request.Password);
+            var (token, refreshToken) = await _authService.LoginAsync(request.Email, request.Password);
 
-            return Ok(new { Token = token });
+            return Ok(new
+            {
+                Token = token,
+                RefreshToken = refreshToken
+            });
         }
         catch (UnauthorizedAccessException)
         {
@@ -38,11 +40,25 @@ public class LoginController : ApiController
         }
     }
 
-    [HttpPost("create")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserDto newUser)
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        var newUserCreated = await _authService.CreateUser(newUser);
-        return Ok(newUserCreated);
+        if (request.RefreshToken.IsEmpty())
+            return BadRequest("No Refresh Token Sent");
+        
+        try
+        {
+            var newAccessToken = await _authService.RefreshTokenAsync(request.RefreshToken);
+
+            return Ok(new
+            {
+                AccessToken = newAccessToken
+            });
+        }
+        catch (SecurityTokenException ste)
+        {
+            // Log the specific security token exception message
+            return Unauthorized(ste.Message);
+        }
     }
 }
