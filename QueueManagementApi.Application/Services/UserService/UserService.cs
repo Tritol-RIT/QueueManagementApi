@@ -6,6 +6,7 @@ using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Application.Services.SetPasswordTokenService;
 using QueueManagementApi.Core.Interfaces;
+using QueueManagementApi.Core.Enums;
 
 namespace QueueManagementApi.Application.Services.UserService;
 

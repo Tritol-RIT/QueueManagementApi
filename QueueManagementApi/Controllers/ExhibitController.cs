@@ -20,9 +20,11 @@ public class ExhibitController : ApiController
     }
 
     [HttpGet]
-    public ActionResult<List<Exhibit>> GetAllExhibits()
+    public ActionResult<List<Exhibit>> GetExhibits(int page, int pageSize)
     {
-        return Ok(_exhibitService.GetAllExhibits());
+        var result = _exhibitService.GetExhibits(page, pageSize);
+
+        return Ok(result);
     }
 
     [HttpGet("{id}")]
@@ -46,8 +48,12 @@ public class ExhibitController : ApiController
             InitialDuration = exhibit.InitialDuration,
             InsuranceFormRequired = exhibit.InsuranceFormRequired,
             AgeRequired = exhibit.AgeRequired,
-            AgeMinimum = exhibit.AgeMinimum
+            AgeMinimum = exhibit.AgeMinimum,
+            CategoryId = exhibit.CategoryId,
+            ExhibitImages = exhibit.ExhibitImages.Select(x => 
+                new ExhibitImage() { DisplayOrder = x.DisplayOrder, ImageUrl = x.ImageUrl}).ToList()
         };
+
         await _exhibitService.AddSingleExhibit(exhibitEntity);
         return CreatedAtAction(nameof(GetExhibitById), new { id = exhibitEntity.Id }, exhibitEntity);
     }

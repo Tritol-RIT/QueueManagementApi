@@ -1,4 +1,4 @@
-﻿using QueueManagementApi.Core.Entities;
+﻿using QueueManagementApi.Core.Enums;
 
 namespace QueueManagementApi.Application.Dtos;
 

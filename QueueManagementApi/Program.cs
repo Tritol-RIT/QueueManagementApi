@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using QueueManagementApi.Application.Extensions;
 using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Core.Entities;
+using QueueManagementApi.Core.Enums;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Infrastructure.Data;
 using QueueManagementApi.JsonConverters;
