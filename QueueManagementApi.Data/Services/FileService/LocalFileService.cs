@@ -18,7 +18,7 @@ public class LocalFileService : IFileService
             Directory.CreateDirectory(_basePath);
     }
 
-    public async Task SaveFileAsync(Stream fileStream, string fileName)
+    public async Task<string> SaveFileAsync(Stream fileStream, string fileName)
     {
         var filePath = Path.Combine(_basePath, fileName);
         var directoryPath = Path.GetDirectoryName(filePath);
@@ -32,6 +32,8 @@ public class LocalFileService : IFileService
 
         await using var file = new FileStream(filePath, FileMode.Create, FileAccess.Write);
         await fileStream.CopyToAsync(file);
+
+        return fileName;
     }
 
     public async Task<Stream> GetFileAsync(string fileName)

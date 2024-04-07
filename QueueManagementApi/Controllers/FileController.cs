@@ -22,9 +22,13 @@ public class FileController : ApiController
 
         await using var stream = file.OpenReadStream();
 
-        await _fileService.SaveFileAsync(stream, file.FileName);
+        var filePath = await _fileService.SaveFileAsync(stream, $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}");
 
-        return Ok("File uploaded successfully.");
+        return Ok(new
+        {
+            Success = true,
+            FilePath = filePath
+        });
     }
 
 }

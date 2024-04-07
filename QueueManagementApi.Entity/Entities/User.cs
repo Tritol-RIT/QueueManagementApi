@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using QueueManagementApi.Core.Enums;
 
 namespace QueueManagementApi.Core.Entities;
 
@@ -37,11 +38,4 @@ public class User : BaseEntity, IAuditable
     public virtual Exhibit? Exhibit { get; set; }
 
     public bool Active { get; set; } = true;
-}
-
-public enum UserRole
-{
-    Admin,
-    Staff,
-    Committee
 }

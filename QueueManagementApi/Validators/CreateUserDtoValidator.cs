@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using QueueManagementApi.Application.Dtos;
-using QueueManagementApi.Core.Entities;
+using QueueManagementApi.Core.Enums;
 
 namespace QueueManagementApi.Validators;
 

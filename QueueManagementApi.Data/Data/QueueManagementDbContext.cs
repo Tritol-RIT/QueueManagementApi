@@ -19,6 +19,7 @@ public class QueueManagementDbContext : DbContext
     public DbSet<ExhibitImage> ExhibitImages { get; set; }
     public DbSet<Insurance> Insurances { get; set; }
     public DbSet<SetPasswordToken> SetPasswordTokens { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
     // Override OnModelCreating if we need it
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,6 +29,12 @@ public class QueueManagementDbContext : DbContext
 
         modelBuilder.Entity<SetPasswordToken>()
             .HasIndex(x => x.Token);
+
+        modelBuilder.Entity<Exhibit>()
+            .HasOne(e => e.Category)
+            .WithMany(c => c.Exhibits)
+            .HasForeignKey(e => e.CategoryId)
+            .OnDelete(DeleteBehavior.SetNull); // Configure the foreign key to be set to null upon deletion of the Category
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
