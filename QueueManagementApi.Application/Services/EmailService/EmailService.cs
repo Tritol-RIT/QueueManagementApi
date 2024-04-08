@@ -22,6 +22,7 @@ public class EmailService : IEmailService
     private const string relativePathAttachment = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\test.txt";
 
     private const string relativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\UserCreationEmailTemplate.cshtml";
+    private const string resetPassRelativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\ResetPasswordEmailTemplate.cshtml";
 
     private readonly IEmailTemplateRenderer _emailTemplate;
     private readonly IConfiguration _configuration;
@@ -90,6 +91,48 @@ public class EmailService : IEmailService
                 Email = model.Email,
                 PasswordSetTokenLink = $"{applicationDomain}/set-password/{setPasswordToken}",
                 Role = model.Role
+            };
+
+            var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, emailModel);
+
+            message.Body = emailBody;
+
+            await client.SendMailAsync(message);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    public async Task SendUserResetPasswordEmailAsync(string email, string subject, User model, string resetPasswordToken)
+    {
+        string templatePath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), resetPassRelativePathTemplate);
+        var applicationDomain = _configuration.GetValue<string>("ApplicationDomain");
+        try
+        {
+            using var client = new SmtpClient();
+            client.Host = _smtpServer;
+            client.Port = _smtpPort;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
+
+
+            using var message = new MailMessage(
+                from: new MailAddress(_smtpUsername, "RITK Queue Management"),
+                to: new MailAddress(email, $"{model.FirstName} {model.LastName}"));
+
+            message.IsBodyHtml = true;
+            message.Subject = subject;
+
+            var emailModel = new ResetPasswordEmailDto
+            {
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Email = model.Email,
+                PasswordResetTokenLink = $"{applicationDomain}/set-password/{resetPasswordToken}"
             };
 
             var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, emailModel);

@@ -14,6 +14,14 @@ public class UserController : ApiController
         _userService = userService;
     }
 
+    [HttpPost("create")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserDto newUser)
+    {
+        var newUserCreated = await _userService.CreateUser(newUser);
+        return Ok(newUserCreated);
+    }
+
     [HttpPut("{id}")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto userUpdateDTO)
@@ -24,21 +32,35 @@ public class UserController : ApiController
     }
 
     [HttpPut("set-password/{token}")]
-    public async Task<IActionResult> SetPassword(string token, string newPassword)
+    public async Task<IActionResult> SetPassword(string token, string newPassword) // This function should be called for resetting password as well
     {
-        // Donat shto validime ne password, ma shum se 8 karaktera, shkronja, numra,etj. ti e din
-        // if (not valid passwordi)
-        //     return BadRequest("Password not valid");
-        await _userService.SetPassword(token, newPassword);
+        if (!IsPasswordValid(newPassword))
+            return BadRequest("Password not valid");
+
+        await _userService.SetPassword(token, newPassword); // Removed reset-password function completely, since set-password had the same function
 
         return Ok("New Password Set Successfully");
     }
 
-    [HttpPost("create")]
+    [HttpPost("request-reset-password")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserDto newUser)
+    public async Task<IActionResult> RequestResetPassword(string email)
     {
-        var newUserCreated = await _userService.CreateUser(newUser);
-        return Ok(newUserCreated);
+        await _userService.RequestResetPassword(email);
+        return Ok("Request for Resetting Password Sent Successfully");
+    }
+
+    private bool IsPasswordValid(string password)
+    {
+        if (password.Length < 8)
+            return false;
+
+        if (!password.Any(char.IsDigit))
+            return false;
+
+        if (!password.Any(c => !char.IsLetterOrDigit(c)))
+            return false;
+
+        return true;
     }
 }
