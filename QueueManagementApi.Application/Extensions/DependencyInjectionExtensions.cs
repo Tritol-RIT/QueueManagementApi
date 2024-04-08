@@ -18,6 +18,7 @@ using QueueManagementApi.Infrastructure.Repositories;
 using QueueManagementApi.Infrastructure.Services.FileService;
 using QueueManagementApi.Infrastructure.UnitOfWork;
 using System.Text;
+using QueueManagementApi.Application.Services.CategoryService;
 
 namespace QueueManagementApi.Application.Extensions;
 
@@ -49,6 +50,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<EmailService>();
 
         services.AddScoped<IFileService, LocalFileService>();
+
+        services.AddScoped<ICategoryService, CategoryService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)

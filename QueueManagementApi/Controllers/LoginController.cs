@@ -26,11 +26,11 @@ public class LoginController : ApiController
 
         try
         {
-            var (token, refreshToken) = await _authService.LoginAsync(request.Email, request.Password);
+            var (accessToken, refreshToken) = await _authService.LoginAsync(request.Email, request.Password);
 
             return Ok(new
             {
-                Token = token,
+                AccessToken = accessToken,
                 RefreshToken = refreshToken
             });
         }

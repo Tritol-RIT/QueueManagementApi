@@ -12,6 +12,9 @@ public class ExhibitImage : BaseEntity
     [Required]
     public int ExhibitId { get; set; }
 
+    [Required]
+    public int DisplayOrder { get; set; }
+
     // Navigation properties
     [ForeignKey(nameof(ExhibitId))]
     public virtual Exhibit Exhibit { get; set; }

@@ -1,5 +1,5 @@
-﻿using QueueManagementApi.Core;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QueueManagementApi.Core.Entities;
 
@@ -33,7 +33,12 @@ public class Exhibit : BaseEntity, IAuditable
 
     public DateTime? UpdatedOn { get; set; }
 
+    public int? CategoryId { get; set; }
+
     // Navigation properties
+    [ForeignKey(nameof(CategoryId))]
+    public virtual Category Category { get; set; }
+
     public virtual ICollection<User> Users { get; set; }
     public virtual ICollection<Visit> Visits { get; set; }
     public virtual ICollection<ExhibitImage> ExhibitImages { get; set; }
