@@ -124,4 +124,31 @@ public class UserService : IUserService
 
         await _unitOfWork.CompleteAsync();
     }
+
+    public async Task RequestResetPassword(string email)
+    {
+        // Find the user by email
+        var user = await _userRepository.FindByCondition(user => user.Email == email).FirstOrDefaultAsync();
+        if (user == null)
+            throw new QueueApiException("User not found!");
+
+        // Generate a new token for password reset
+        var resetPasswordToken = new SetPasswordToken
+        {
+            User = user,
+            ExpirationDate = DateTime.UtcNow.AddMinutes(15),
+            Token = Guid.NewGuid().ToString(),
+            Active = true
+        };
+
+        user.Active = false; // When reset password is requested, that user is deactivated until they reset their password
+
+        _userRepository.Update(user);
+        await _unitOfWork.Repository<SetPasswordToken>().AddAsync(resetPasswordToken);
+
+        await _unitOfWork.CompleteAsync();
+
+        // Send email here
+        await _emailService.SendUserResetPasswordEmailAsync(email, "Request for Resetting Password", user, resetPasswordToken.Token);
+    }
 }
