@@ -7,9 +7,9 @@ namespace QueueManagementApi.Application.Services.WaitTimeCalculationService;
 
 public class WaitTimeCalculationService : IWaitTimeCalculationService
 {
-    private readonly IRepository<Visit> _visitRepository;
+    private readonly IVisitRepository _visitRepository;
 
-    public WaitTimeCalculationService(IRepository<Visit> visitRepository)
+    public WaitTimeCalculationService(IVisitRepository visitRepository)
     {
         _visitRepository = visitRepository;
     }
@@ -18,16 +18,8 @@ public class WaitTimeCalculationService : IWaitTimeCalculationService
     {
         var visitDuration = exhibit.CurrentDuration ?? exhibit.InitialDuration;
 
-        var allExhibitVisits = await _visitRepository.GetAll()
-                             .Include(v => v.Exhibit)
-                             .Where(v => v.ExhibitId == exhibit.Id)
-                             .OrderBy(v => v.PotentialStartTime)
-                             .ToListAsync();
-        var allVisitorVisits = await _visitRepository.GetAll()
-                             .Include(v => v.Exhibit)
-                             .Where(v => v.Group.Visitors.Any(visitor => visitor.Email == visitorEmail))
-                             .OrderBy(v => v.PotentialStartTime)
-                             .ToListAsync();
+        var allExhibitVisits = await _visitRepository.GetVisitsByExhibitId(exhibit.Id);
+        var allVisitorVisits = await _visitRepository.GetVisitsByVisitorEmail(visitorEmail);
 
         DateTime potentialStartTime = DateTime.UtcNow;
         DateTime potentialEndTime;
@@ -70,7 +62,7 @@ public class WaitTimeCalculationService : IWaitTimeCalculationService
         var minutesToAdd = (potentialStartTime - latestExhibitTime).TotalMinutes % visitDuration;
 
         // If there's enough time for at least one full slot after the latest exhibit visit
-        if (minutesToAdd > 0)
+        if (minutesToAdd > 0 && latestExhibitTime > DateTime.UtcNow.AddMinutes(visitDuration))
         {
             potentialStartTime = potentialStartTime.AddMinutes(minutesToAdd); // Move to the next slot
         }

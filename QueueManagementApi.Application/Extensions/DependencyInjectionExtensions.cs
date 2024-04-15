@@ -71,6 +71,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRepository<Visitor>, GenericRepository<Visitor>>();
         services.AddScoped<IRepository<Group>, GenericRepository<Group>>();
 
+        services.AddScoped<IVisitRepository, VisitRepository>();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 
