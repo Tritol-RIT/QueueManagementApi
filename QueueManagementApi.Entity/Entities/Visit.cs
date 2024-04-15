@@ -11,14 +11,17 @@ public class Visit : BaseEntity, IAuditable
     [Required]
     public int ExhibitId { get; set; }
 
-    public DateTime? StartTime { get; set; }
+    public DateTime PotentialStartTime { get; set; }
 
-    public DateTime? EndTime { get; set; }
+    public DateTime PotentialEndTime { get; set; }
+
+    public DateTime? ActualStartTime { get; set; }
+
+    public DateTime? ActualEndTime { get; set; }
+
 
     [Required]
     public string QrCode { get; set; }
-
-    public string QrCodeUrl { get; set; }
 
     public DateTime CreatedOn { get; set; }
 

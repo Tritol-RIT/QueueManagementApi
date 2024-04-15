@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using QueueManagementApi.Infrastructure.Data;
@@ -11,9 +12,11 @@ using QueueManagementApi.Infrastructure.Data;
 namespace QueueManagementApi.Infrastructure.Migrations
 {
     [DbContext(typeof(QueueManagementDbContext))]
-    partial class QueueManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240415224802_NotNullPotentialTimes")]
+    partial class NotNullPotentialTimes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,6 +164,9 @@ namespace QueueManagementApi.Infrastructure.Migrations
                     b.Property<DateTime>("ApprovalTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("ExhibitId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("VisitorId")
                         .HasColumnType("integer");
 
@@ -169,6 +175,8 @@ namespace QueueManagementApi.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ExhibitId");
 
                     b.HasIndex("VisitorId");
 
@@ -364,6 +372,10 @@ namespace QueueManagementApi.Infrastructure.Migrations
 
             modelBuilder.Entity("QueueManagementApi.Core.Entities.Insurance", b =>
                 {
+                    b.HasOne("QueueManagementApi.Core.Entities.Exhibit", null)
+                        .WithMany("Insurances")
+                        .HasForeignKey("ExhibitId");
+
                     b.HasOne("QueueManagementApi.Core.Entities.Visitor", "Visitor")
                         .WithMany("Insurances")
                         .HasForeignKey("VisitorId")
@@ -431,6 +443,8 @@ namespace QueueManagementApi.Infrastructure.Migrations
             modelBuilder.Entity("QueueManagementApi.Core.Entities.Exhibit", b =>
                 {
                     b.Navigation("ExhibitImages");
+
+                    b.Navigation("Insurances");
 
                     b.Navigation("Users");
 
