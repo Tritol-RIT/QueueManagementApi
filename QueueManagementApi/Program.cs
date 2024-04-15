@@ -121,11 +121,15 @@ app.UseAuthorization();
 
 app.UseStaticFiles();
 
+var filesDirectoryName = Path.Combine(app.Environment.ContentRootPath, "Files");
+
+if (!Directory.Exists(filesDirectoryName))
+    Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "Files"));
+
 // Additional configuration to serve files from a custom folder
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(app.Environment.ContentRootPath, "Files")),
+    FileProvider = new PhysicalFileProvider(filesDirectoryName),
     RequestPath = "/api/files"
 });
 
