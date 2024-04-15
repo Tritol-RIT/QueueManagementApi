@@ -18,20 +18,26 @@ public class VisitorService : IVisitorService
     private readonly IQrCodeService _qrCodeService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IRepository<Group> _groupRepository;
-    private readonly IRepository<Visit> _visitRepository;
+    private readonly IVisitRepository _visitRepository;
     private readonly IRepository<Visitor> _visitorRepository;
     private readonly IWaitTimeCalculationService _waitTimeCalculationService;
 
-    public VisitorService(ILogger<VisitorService> logger, IExhibitService exhibitService, IQrCodeService qrCodeService, IUnitOfWork unitOfWork, IWaitTimeCalculationService waitTimeCalculationService)
+    public VisitorService(
+        ILogger<VisitorService> logger, 
+        IExhibitService exhibitService, 
+        IQrCodeService qrCodeService, 
+        IUnitOfWork unitOfWork, 
+        IWaitTimeCalculationService waitTimeCalculationService, 
+        IVisitRepository visitRepository)
     {
         _logger = logger;
         _exhibitService = exhibitService;
         _qrCodeService = qrCodeService;
         _unitOfWork = unitOfWork;
         _waitTimeCalculationService = waitTimeCalculationService;
+        _visitRepository = visitRepository;
 
         _groupRepository = unitOfWork.Repository<Group>();
-        _visitRepository = unitOfWork.Repository<Visit>();
         _visitorRepository = unitOfWork.Repository<Visitor>();
     }
 
@@ -52,7 +58,7 @@ public class VisitorService : IVisitorService
         {
             _logger.LogError(ex, $"Wait time calculation failed: {ex.Message}");
 
-            potentialStartTime = ((await GetVisitsByExhibitId(exhibit.Id)).LastOrDefault()?.PotentialStartTime ?? DateTime.UtcNow).AddMinutes(2);
+            potentialStartTime = ((await _visitRepository.GetVisitsByExhibitId(exhibit.Id)).LastOrDefault()?.PotentialStartTime ?? DateTime.UtcNow).AddMinutes(2);
             potentialEndTime = potentialStartTime.AddMinutes(exhibit.CurrentDuration ?? exhibit.InitialDuration);
         }
 
@@ -85,24 +91,5 @@ public class VisitorService : IVisitorService
 
         await _unitOfWork.CompleteAsync();
         return visit;
-    }
-
-
-    public async Task<List<Visit>> GetVisitsByVisitorEmail(string email)
-    {
-        return await _visitRepository.GetAll()
-                             .Include(v => v.Exhibit)
-                             .Where(v => v.Group.Visitors.Any(visitor => visitor.Email == email))
-                             .OrderBy(v => v.PotentialStartTime)
-                             .ToListAsync();
-    }
-
-    public async Task<List<Visit>> GetVisitsByExhibitId(int exhibitId)
-    {
-        return await _visitRepository.GetAll()
-                             .Include(v => v.Exhibit)
-                             .Where(v => v.ExhibitId == exhibitId)
-                             .OrderBy(v => v.PotentialStartTime)
-                             .ToListAsync();
     }
 }
