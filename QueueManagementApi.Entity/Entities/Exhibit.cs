@@ -42,5 +42,4 @@ public class Exhibit : BaseEntity, IAuditable
     public virtual ICollection<User> Users { get; set; }
     public virtual ICollection<Visit> Visits { get; set; }
     public virtual ICollection<ExhibitImage> ExhibitImages { get; set; }
-    public virtual ICollection<Insurance> Insurances { get; set; }
 }
