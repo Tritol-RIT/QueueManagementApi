@@ -12,8 +12,8 @@ using QueueManagementApi.Infrastructure.Data;
 namespace QueueManagementApi.Infrastructure.Migrations
 {
     [DbContext(typeof(QueueManagementDbContext))]
-    [Migration("20240407003419_Category_DisplayOrder")]
-    partial class Category_DisplayOrder
+    [Migration("20240415152415_Categories")]
+    partial class Categories
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
