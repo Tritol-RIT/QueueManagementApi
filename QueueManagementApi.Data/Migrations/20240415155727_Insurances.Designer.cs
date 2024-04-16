@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using QueueManagementApi.Infrastructure.Data;
@@ -11,9 +12,11 @@ using QueueManagementApi.Infrastructure.Data;
 namespace QueueManagementApi.Infrastructure.Migrations
 {
     [DbContext(typeof(QueueManagementDbContext))]
-    partial class QueueManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240415155727_Insurances")]
+    partial class Insurances
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,6 +164,9 @@ namespace QueueManagementApi.Infrastructure.Migrations
                     b.Property<DateTime>("ApprovalTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("ExhibitId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("VisitorId")
                         .HasColumnType("integer");
 
@@ -169,6 +175,8 @@ namespace QueueManagementApi.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ExhibitId");
 
                     b.HasIndex("VisitorId");
 
@@ -267,13 +275,10 @@ namespace QueueManagementApi.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("ActualEndTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("ActualStartTime")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ExhibitId")
@@ -282,15 +287,16 @@ namespace QueueManagementApi.Infrastructure.Migrations
                     b.Property<int>("GroupId")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("PotentialEndTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("PotentialStartTime")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("QrCode")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("QrCodeUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("timestamp with time zone");
@@ -364,6 +370,10 @@ namespace QueueManagementApi.Infrastructure.Migrations
 
             modelBuilder.Entity("QueueManagementApi.Core.Entities.Insurance", b =>
                 {
+                    b.HasOne("QueueManagementApi.Core.Entities.Exhibit", null)
+                        .WithMany("Insurances")
+                        .HasForeignKey("ExhibitId");
+
                     b.HasOne("QueueManagementApi.Core.Entities.Visitor", "Visitor")
                         .WithMany("Insurances")
                         .HasForeignKey("VisitorId")
@@ -431,6 +441,8 @@ namespace QueueManagementApi.Infrastructure.Migrations
             modelBuilder.Entity("QueueManagementApi.Core.Entities.Exhibit", b =>
                 {
                     b.Navigation("ExhibitImages");
+
+                    b.Navigation("Insurances");
 
                     b.Navigation("Users");
 
