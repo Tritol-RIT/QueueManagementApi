@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using QRCoder;
 using QueueManagementApi.Application.Dtos;
+using System.Globalization;
 
 namespace QueueManagementApi.Application.Services.EmailService;
 
@@ -23,6 +24,7 @@ public class EmailService : IEmailService
 
     private const string relativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\UserCreationEmailTemplate.cshtml";
     private const string resetPassRelativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\ResetPasswordEmailTemplate.cshtml";
+    private const string registerVisitorRelativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\RegisterVisitorEmailTemplate.cshtml";
 
     private readonly IEmailTemplateRenderer _emailTemplate;
     private readonly IConfiguration _configuration;
@@ -133,6 +135,49 @@ public class EmailService : IEmailService
                 LastName = model.LastName,
                 Email = model.Email,
                 PasswordResetTokenLink = $"{applicationDomain}/set-password/{resetPasswordToken}"
+            };
+
+            var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, emailModel);
+
+            message.Body = emailBody;
+
+            await client.SendMailAsync(message);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    public async Task SendVisitorRegistrationEmailAsync(string email, string subject, Visit visit, Visitor visitor)
+    {
+        string templatePath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), registerVisitorRelativePathTemplate);
+        var applicationDomain = _configuration.GetValue<string>("ApplicationDomain");
+        try
+        {
+            using var client = new SmtpClient();
+            client.Host = _smtpServer;
+            client.Port = _smtpPort;
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
+
+
+            using var message = new MailMessage(
+                from: new MailAddress(_smtpUsername, "RITK Queue Management"),
+                to: new MailAddress(email, $"{visitor.FirstName} {visitor.LastName}"));
+
+            message.IsBodyHtml = true;
+            message.Subject = subject;
+
+            var emailModel = new RegisterVisitorEmailDto
+            {
+                FirstName = visitor.FirstName,
+                LastName = visitor.LastName,
+                ExhibitTitle = visit.Exhibit.Title,
+                QrCodeImage = $"<img src=\"data:image/png;base64,{visit.QrCode}\" alt=\"QR Code\"/>",
+                VisitDate = visit.PotentialStartTime.ToString("f", new CultureInfo("en-GB"))
             };
 
             var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, emailModel);
