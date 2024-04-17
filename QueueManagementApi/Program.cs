@@ -116,6 +116,11 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+app.UseCors(x => x
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowAnyOrigin());
+
 app.UseAuthentication();
 app.UseAuthorization();
 
