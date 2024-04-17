@@ -1,8 +1,10 @@
-﻿namespace QueueManagementApi.Core.Extensions;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace QueueManagementApi.Core.Extensions;
 
 public static class StringExtensions
 {
-    public static bool IsEmpty(this string? value)
+    public static bool IsEmpty([NotNull] this string? value)
     {
         return string.IsNullOrWhiteSpace(value);
     }

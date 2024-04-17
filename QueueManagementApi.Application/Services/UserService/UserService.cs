@@ -8,6 +8,7 @@ using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Application.Services.SetPasswordTokenService;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Core.Enums;
+using QueueManagementApi.Core.Extensions;
 using QueueManagementApi.Core.Pagination;
 
 namespace QueueManagementApi.Application.Services.UserService;
@@ -159,11 +160,13 @@ public class UserService : IUserService
         var res = _userRepository
             .GetAll();
 
-        if (!search.IsNullOrEmpty())
+        if (!search.IsEmpty())
         {
             res = res.Where(
                 x => x.FirstName.Contains(search) || x.LastName.Contains(search) || x.Email.Contains(search));
         }
+
+        res = res.OrderByDescending(x => x.CreatedOn);
 
         return res.ToPagedList(page, pageSize);
     }
