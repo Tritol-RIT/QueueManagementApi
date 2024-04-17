@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using QRCoder;
 using QueueManagementApi.Application.Dtos;
 using System.Globalization;
+using QueueManagementApi.Application.Services.QrCodeService;
 
 namespace QueueManagementApi.Application.Services.EmailService;
 
@@ -21,18 +22,16 @@ public class EmailService : IEmailService
     private const string _smtpUsername = "denivetoni@gmail.com";
     private const string _smtpPassword = "rgapduuvyqjzghkk";
     private const string relativePathAttachment = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\test.txt";
-
-    private const string relativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\UserCreationEmailTemplate.cshtml";
-    private const string resetPassRelativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\ResetPasswordEmailTemplate.cshtml";
-    private const string registerVisitorRelativePathTemplate = @"..\..\..\..\QueueManagementApi.Application\EmailTemplates\RegisterVisitorEmailTemplate.cshtml";
-
+    
     private readonly IEmailTemplateRenderer _emailTemplate;
     private readonly IConfiguration _configuration;
+    private readonly IQrCodeService _qrCodeService;
 
-    public EmailService(IEmailTemplateRenderer emailTemplate, IConfiguration configuration)
+    public EmailService(IEmailTemplateRenderer emailTemplate, IConfiguration configuration, IQrCodeService qrCodeService)
     {
         _emailTemplate = emailTemplate;
         _configuration = configuration;
+        _qrCodeService = qrCodeService;
     }
 
     public async Task SendEmailAsync(string email, string subject, string body)
@@ -149,8 +148,6 @@ public class EmailService : IEmailService
 
     public async Task SendVisitorRegistrationEmailAsync(string email, string subject, Visit visit, Visitor visitor)
     {
-        string templatePath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), registerVisitorRelativePathTemplate);
-        var applicationDomain = _configuration.GetValue<string>("ApplicationDomain");
         try
         {
             using var client = new SmtpClient();
@@ -174,11 +171,11 @@ public class EmailService : IEmailService
                 FirstName = visitor.FirstName,
                 LastName = visitor.LastName,
                 ExhibitTitle = visit.Exhibit.Title,
-                QrCodeImage = $"<img src=\"data:image/png;base64,{visit.QrCode}\" alt=\"QR Code\"/>",
-                VisitDate = visit.PotentialStartTime.ToString("f", new CultureInfo("en-GB"))
+                QrCodeImage = $"data:image/png;base64, {_qrCodeService.GenerateQrCode(new Guid(visit.QrCode))}",
+                VisitDate = visit.PotentialStartTime.ToString("g", new CultureInfo("sq-XK"))
             };
 
-            var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, emailModel);
+            var emailBody = await _emailTemplate.RenderEmailTemplateAsync("RegisterVisitorEmailTemplate.cshtml", emailModel);
 
             message.Body = emailBody;
 

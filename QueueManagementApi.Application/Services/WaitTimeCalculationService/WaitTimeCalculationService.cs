@@ -21,6 +21,7 @@ public class WaitTimeCalculationService : IWaitTimeCalculationService
         var allExhibitVisits = await _visitRepository.GetVisitsByExhibitId(exhibit.Id);
         var allVisitorVisits = await _visitRepository.GetVisitsByVisitorEmail(visitorEmail);
 
+        DateTime now = DateTime.UtcNow;
         DateTime potentialStartTime = DateTime.UtcNow;
         DateTime potentialEndTime;
 
@@ -31,7 +32,7 @@ public class WaitTimeCalculationService : IWaitTimeCalculationService
             var nextVisitStartTime = i == allExhibitVisits.Count ? DateTime.MinValue : allExhibitVisits[i].PotentialStartTime;
 
             // Check if the gap is big enough for the new visit
-            if (nextVisitStartTime >= previousVisitEndTime.AddMinutes(visitDuration))
+            if (nextVisitStartTime >= previousVisitEndTime.AddMinutes(visitDuration) && previousVisitEndTime >= now)
             {
                 // Proposed new times
                 potentialStartTime = previousVisitEndTime.AddMinutes(2); // Start immediately after the previous visit ends
@@ -52,6 +53,10 @@ public class WaitTimeCalculationService : IWaitTimeCalculationService
         // If no suitable gap is found, find the earliest possible time considering both the visitor's and exhibit's schedules
         DateTime latestExhibitTime = allExhibitVisits.LastOrDefault()?.PotentialEndTime ?? DateTime.UtcNow;
         DateTime latestVisitorTime = allVisitorVisits.LastOrDefault()?.PotentialEndTime ?? DateTime.UtcNow;
+
+        // Ensure neither time is in the past
+        latestExhibitTime = latestExhibitTime < now ? now : latestExhibitTime;
+        latestVisitorTime = latestVisitorTime < now ? now : latestVisitorTime;
 
         // Schedule at the earliest possible time after the latest of the visitor's and exhibit's commitments
         potentialStartTime = latestExhibitTime > latestVisitorTime ? latestExhibitTime : latestVisitorTime;
