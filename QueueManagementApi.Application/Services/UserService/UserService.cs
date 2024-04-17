@@ -7,6 +7,7 @@ using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Application.Services.SetPasswordTokenService;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Core.Enums;
+using QueueManagementApi.Core.Pagination;
 
 namespace QueueManagementApi.Application.Services.UserService;
 
@@ -150,5 +151,10 @@ public class UserService : IUserService
 
         // Send email here
         await _emailService.SendUserResetPasswordEmailAsync(email, "Request for Resetting Password", user, resetPasswordToken.Token);
+    }
+
+    public async Task<PagedList<User>> GetUsers(int page, int pageSize)
+    {
+        return _userRepository.GetAll().ToPagedList(page, pageSize);
     }
 }
