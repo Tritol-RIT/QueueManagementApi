@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.ExhibitService;
 using QueueManagementApi.Application.Services.QrCodeService;
+using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Core;
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Extensions;
@@ -21,6 +22,7 @@ public class VisitorService : IVisitorService
     private readonly IVisitRepository _visitRepository;
     private readonly IRepository<Visitor> _visitorRepository;
     private readonly IWaitTimeCalculationService _waitTimeCalculationService;
+    private readonly IEmailService _emailService;
 
     public VisitorService(
         ILogger<VisitorService> logger, 
@@ -28,7 +30,8 @@ public class VisitorService : IVisitorService
         IQrCodeService qrCodeService, 
         IUnitOfWork unitOfWork, 
         IWaitTimeCalculationService waitTimeCalculationService, 
-        IVisitRepository visitRepository)
+        IVisitRepository visitRepository,
+        IEmailService emailService)
     {
         _logger = logger;
         _exhibitService = exhibitService;
@@ -36,6 +39,7 @@ public class VisitorService : IVisitorService
         _unitOfWork = unitOfWork;
         _waitTimeCalculationService = waitTimeCalculationService;
         _visitRepository = visitRepository;
+        _emailService = emailService;
 
         _groupRepository = unitOfWork.Repository<Group>();
         _visitorRepository = unitOfWork.Repository<Visitor>();
@@ -90,6 +94,10 @@ public class VisitorService : IVisitorService
         await _visitRepository.AddAsync(visit);
 
         await _unitOfWork.CompleteAsync();
+
+        // Send email with QR Code
+        await _emailService.SendVisitorRegistrationEmailAsync(initialVisitor.Email, "Exhibit Registration Confirmation", visit, initialVisitor);
+
         return visit;
     }
 }

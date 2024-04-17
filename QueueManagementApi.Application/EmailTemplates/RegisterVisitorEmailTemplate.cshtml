@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #ffffff;
+            border: 5px solid #F76902;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #f4f4f4;
+            ;
+            color: #0a0a0a;
+            padding: 20px;
+            border-radius: 3px 3px 0 0;
+        }
+
+            .header h1 {
+                margin: 0;
+                font-size: 24px;
+                text-align: left;
+            }
+
+        .email-body {
+            padding: 20px;
+            text-align: left;
+        }
+
+        .footer {
+            background-color: #f4f4f4;
+            color: #888888;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Welcome to <span style="color: #F76902;">ImagineRIT</span></h1>
+        </div>
+        <div class="email-body">
+            <p>Hi <strong>@Model.FirstName @Model.LastName</strong>,</p>
+            <p>Your visit to <strong>@Model.ExhibitTitle</strong> exhibit has been scheduled!</p>
+            <p>Please use the QR code below to check in and check out of the exhibit:</p>
+            <p style="text-align:center;">
+                <img src="@Model.QrCodeImage" alt="QR Code" style="width: 100px; height: 100px;" />
+            </p>
+            <p>Your visit is scheduled for <strong>@Model.VisitDate</strong>.</p>
+            <p>We look forward to seeing you!</p>
+        </div>
+        <div class="footer">
+            From the team at <strong>ImagineRIT</strong><br>
+            TRITOL
+        </div>
+    </div>
+</body>
+</html>
+
