@@ -64,7 +64,6 @@ public class EmailService : IEmailService
 
     public async Task SendEmailUserAsync(string email, string subject, User model, string setPasswordToken)
     {
-        string templatePath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath),relativePathTemplate);
         var applicationDomain = _configuration.GetValue<string>("ApplicationDomain");
         try
         {
@@ -93,7 +92,7 @@ public class EmailService : IEmailService
                 Role = model.Role
             };
 
-            var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, emailModel);
+            var emailBody = await _emailTemplate.RenderEmailTemplateAsync("UserCreationEmailTemplate.cshtml", emailModel);
 
             message.Body = emailBody;
 
@@ -107,7 +106,6 @@ public class EmailService : IEmailService
 
     public async Task SendUserResetPasswordEmailAsync(string email, string subject, User model, string resetPasswordToken)
     {
-        string templatePath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), resetPassRelativePathTemplate);
         var applicationDomain = _configuration.GetValue<string>("ApplicationDomain");
         try
         {
@@ -135,7 +133,7 @@ public class EmailService : IEmailService
                 PasswordResetTokenLink = $"{applicationDomain}/set-password/{resetPasswordToken}"
             };
 
-            var emailBody = await _emailTemplate.RenderEmailTemplateAsync(templatePath, emailModel);
+            var emailBody = await _emailTemplate.RenderEmailTemplateAsync("ResetPasswordEmailTemplate.cshtml", emailModel);
 
             message.Body = emailBody;
 

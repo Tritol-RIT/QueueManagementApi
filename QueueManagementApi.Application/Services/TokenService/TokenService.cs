@@ -39,7 +39,9 @@ public class TokenService : ITokenService
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
-                new Claim("tokenType", tokenType) // Clearly indicate the token's purpose
+                new Claim("tokenType", tokenType), // Clearly indicate the token's purpose
+                new Claim(ClaimTypes.GivenName, user.FirstName),
+                new Claim(ClaimTypes.Surname, user.LastName),
             }),
             Expires = DateTime.UtcNow.AddHours(expirationHours),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

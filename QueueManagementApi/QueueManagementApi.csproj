@@ -26,6 +26,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\QueueManagementApi.Application\QueueManagementApi.Application.csproj" />
+	<Content Include="..\QueueManagementApi.Application\EmailTemplates\*.cshtml">
+		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</Content>
   </ItemGroup>
+	
+
 
 </Project>

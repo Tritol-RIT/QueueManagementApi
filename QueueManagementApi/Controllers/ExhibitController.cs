@@ -38,7 +38,7 @@ public class ExhibitController : ApiController
 
     [HttpPost("createSingleExhibit")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<Exhibit>> CreateExhibit(CreateExhibitDto exhibit)
+    public async Task<ActionResult<Exhibit>> CreateExhibit([FromBody] CreateExhibitDto exhibit)
     {
         var exhibitEntity = new Exhibit
         {

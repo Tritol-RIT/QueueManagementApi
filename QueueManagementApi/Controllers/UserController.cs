@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.UserService;
+using QueueManagementApi.Core.Entities;
 
 namespace QueueManagementApi.Controllers;
 
@@ -12,6 +13,14 @@ public class UserController : ApiController
     public UserController(IUserService userService)
     {
         _userService = userService;
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetUsers(int page, int pageSize)
+    {
+        var users = await _userService.GetUsers(page, pageSize);
+        return Ok(users);
     }
 
     [HttpPost("create")]
@@ -32,7 +41,7 @@ public class UserController : ApiController
     }
 
     [HttpPut("set-password/{token}")]
-    public async Task<IActionResult> SetPassword(string token, string newPassword) // This function should be called for resetting password as well
+    public async Task<IActionResult> SetPassword(string token, [FromBody] string newPassword) // This function should be called for resetting password as well
     {
         if (!IsPasswordValid(newPassword))
             return BadRequest("Password not valid");
