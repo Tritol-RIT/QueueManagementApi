@@ -153,8 +153,11 @@ public class UserService : IUserService
         await _emailService.SendUserResetPasswordEmailAsync(email, "Request for Resetting Password", user, resetPasswordToken.Token);
     }
 
-    public async Task<PagedList<User>> GetUsers(int page, int pageSize)
+    public async Task<PagedList<User>> GetUsers(int page, int pageSize, string search)
     {
-        return _userRepository.GetAll().ToPagedList(page, pageSize);
+        return _userRepository
+            .GetAll()
+            .Where(x => x.FirstName.Contains(search) || x.LastName.Contains(search) || x.Email.Contains(search))
+            .ToPagedList(page, pageSize);
     }
 }
