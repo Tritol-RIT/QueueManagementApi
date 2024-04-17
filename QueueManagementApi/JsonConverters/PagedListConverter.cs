@@ -37,10 +37,10 @@ public class PagedListConverter : JsonConverter
         };
 
         // Serialize the PagedListDto<T> instance with respect to [JsonIgnore]
-        string json = JsonConvert.SerializeObject(dto, settings);  // Use SerializeObject
+        //string json = JsonConvert.SerializeObject(dto, settings);  // Use SerializeObject
 
-        // Serialize the PagedListDto<T> instance with respect to [JsonIgnore]
-        writer.WriteRaw(json);
+        // Serialize the PagedListDto<T> instance
+        serializer.Serialize(writer, dto);
     }
 }
 
