@@ -57,8 +57,6 @@ public class WaitTimeCalculationService : IWaitTimeCalculationService
         potentialStartTime = latestExhibitTime > latestVisitorTime ? latestExhibitTime : latestVisitorTime;
 
         // Calculate the ideal start time considering exhibit duration as a slot
-        // int idealSlotStart = Convert.ToInt32(Math.Floor((decimal)(potentialStartTime - latestExhibitTime).TotalMinutes / visitDuration) * visitDuration);
-
         var minutesToAdd = (potentialStartTime - latestExhibitTime).TotalMinutes % visitDuration;
 
         // If there's enough time for at least one full slot after the latest exhibit visit
