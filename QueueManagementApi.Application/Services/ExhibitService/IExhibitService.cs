@@ -17,4 +17,7 @@ public interface IExhibitService
     Task AddMultipleExhibits(List<Exhibit> file);
 
     Task UpdateSingleExhibit(Exhibit exhibit);
+    Task<int> GetStaffMemberCount();
+    Task<int> GetTotalVisitors();
+    Task<List<Exhibit>> GetTopExhibits();
 }

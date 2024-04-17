@@ -181,4 +181,20 @@ public class ExhibitController : ApiController
         await _exhibitService.UpdateSingleExhibit(exhibit);
         return Ok(exhibit);
     }
+
+    [HttpGet("stats")]
+    public async Task<IActionResult> GetStatistics()
+    {
+        var exhibitCount = _exhibitService.GetExhibits(1, 1).TotalCount;
+        var staffMemberCount = await _exhibitService.GetStaffMemberCount();
+        int totalVisitors = await _exhibitService.GetTotalVisitors();
+        List<Exhibit> topReserverExhibits = await _exhibitService.GetTopExhibits();
+        return Ok(new
+        {
+            exhibitCount,
+            staffMemberCount,
+            totalVisitors,
+            topReserverExhibits
+        });
+    }
 }

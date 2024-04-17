@@ -17,7 +17,7 @@ public class UserController : ApiController
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetUsers(int page, int pageSize, string search)
+    public async Task<IActionResult> GetUsers(int page, int pageSize, string? search)
     {
         var users = await _userService.GetUsers(page, pageSize, search);
         return Ok(users);

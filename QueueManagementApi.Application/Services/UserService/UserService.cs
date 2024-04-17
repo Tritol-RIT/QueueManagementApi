@@ -2,6 +2,7 @@
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Application.Services.SetPasswordTokenService;
@@ -153,11 +154,17 @@ public class UserService : IUserService
         await _emailService.SendUserResetPasswordEmailAsync(email, "Request for Resetting Password", user, resetPasswordToken.Token);
     }
 
-    public async Task<PagedList<User>> GetUsers(int page, int pageSize, string search)
+    public async Task<PagedList<User>> GetUsers(int page, int pageSize, string? search)
     {
-        return _userRepository
-            .GetAll()
-            .Where(x => x.FirstName.Contains(search) || x.LastName.Contains(search) || x.Email.Contains(search))
-            .ToPagedList(page, pageSize);
+        var res = _userRepository
+            .GetAll();
+
+        if (!search.IsNullOrEmpty())
+        {
+            res = res.Where(
+                x => x.FirstName.Contains(search) || x.LastName.Contains(search) || x.Email.Contains(search));
+        }
+
+        return res.ToPagedList(page, pageSize);
     }
 }
