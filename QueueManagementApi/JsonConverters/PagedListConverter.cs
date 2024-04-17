@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using QueueManagementApi.Core.Pagination;
-using System.Reflection;
 
 namespace QueueManagementApi.JsonConverters;
 
@@ -31,29 +30,10 @@ public class PagedListConverter : JsonConverter
         // Use reflection to instantiate a PagedListDto<T> with the value
         object? dto = Activator.CreateInstance(dtoType, value);
 
-        var settings = new JsonSerializerSettings
-        {
-            ContractResolver = new JsonIgnoreContractResolver()
-        };
-
-        // Serialize the PagedListDto<T> instance with respect to [JsonIgnore]
-        //string json = JsonConvert.SerializeObject(dto, settings);  // Use SerializeObject
-
         // Serialize the PagedListDto<T> instance
         serializer.Serialize(writer, dto);
     }
 }
-
-public class JsonIgnoreContractResolver : DefaultContractResolver
-{
-    protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-    {
-        var property = base.CreateProperty(member, memberSerialization);
-        property.Ignored = member.GetCustomAttribute<JsonIgnoreAttribute>() != null;
-        return property;
-    }
-}
-
 
 public class PagedListDto<T>
 {
