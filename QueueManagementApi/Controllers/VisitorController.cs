@@ -13,7 +13,13 @@ public class VisitorController : ApiController
     {
         _visitorService = visitorService;
     }
+    [HttpGet("GetAllVisitiors")]
+    public async Task<IActionResult> GetAction()
+    {
+        List<AllVisitDto> result = await _visitorService.VisitGetAll();
 
+        return Ok(result);
+    }
     [HttpPost("register")]
     public async Task<IActionResult> RegisterVisitor(RegisterVisitorDto registerVisitorDto)
     {
