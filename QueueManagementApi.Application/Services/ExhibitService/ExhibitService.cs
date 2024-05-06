@@ -20,7 +20,7 @@ public class ExhibitService : IExhibitService
 
     public async Task<Exhibit?> GetExhibitById(int id)
     {
-        return await _exhibitRepository.FindById(id);
+        return await _exhibitRepository.FindById(id, x => x.ExhibitImages, x => x.Users);
     }
 
     public PagedList<Exhibit> GetExhibits(int page, int pageSize)
@@ -36,6 +36,7 @@ public class ExhibitService : IExhibitService
     {
         return _exhibitRepository.GetAll().ToList();
     }
+
     public async Task AddSingleExhibit(Exhibit exhibit)
     {
         await _exhibitRepository.AddAsync(exhibit);
