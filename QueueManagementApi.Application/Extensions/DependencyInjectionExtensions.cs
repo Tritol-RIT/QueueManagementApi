@@ -100,7 +100,8 @@ public static class DependencyInjectionExtensions
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = false,
-                ValidateAudience = false
+                ValidateAudience = false,
+                ValidateLifetime = true
             };
             x.Events = new JwtBearerEvents
             {

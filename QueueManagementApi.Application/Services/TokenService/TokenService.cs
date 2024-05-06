@@ -47,6 +47,9 @@ public class TokenService : ITokenService
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
 
+        if (user.ExhibitId is not null && user.ExhibitId != 0) 
+            tokenDescriptor.Claims.Add("exhibitId", user.ExhibitId);
+
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
