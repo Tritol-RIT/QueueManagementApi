@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.VisitorService;
 using QueueManagementApi.Core.Entities;
@@ -13,7 +14,14 @@ public class VisitorController : ApiController
     {
         _visitorService = visitorService;
     }
+    [HttpGet("GetAllVisitiors")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAction()
+    {
+        List<AllVisitDto> result = await _visitorService.VisitGetAll();
 
+        return Ok(result);
+    }
     [HttpPost("register")]
     public async Task<IActionResult> RegisterVisitor(RegisterVisitorDto registerVisitorDto)
     {

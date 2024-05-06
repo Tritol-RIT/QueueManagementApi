@@ -9,6 +9,7 @@ using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Extensions;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Core.Services.WaitTimeCalculationService;
+using QueueManagementApi.Application.Dtos;
 
 namespace QueueManagementApi.Application.Services.VisitorService;
 
@@ -99,5 +100,21 @@ public class VisitorService : IVisitorService
         await _emailService.SendVisitorRegistrationEmailAsync(initialVisitor.Email, "Exhibit Registration Confirmation", visit, initialVisitor);
 
         return visit;
+    }
+    public async Task<List<AllVisitDto>> VisitGetAll()
+    {
+        List<Visit> allVisit = await _visitRepository.GetVisits();
+        List<AllVisitDto> allVisitDtos = allVisit
+        .GroupBy(v => v.Group.Visitors.FirstOrDefault().Email)
+        .Select(g => new AllVisitDto
+        {
+            VisitorEmail = g.Key,
+            VisitorFirstName = g.First().Group.Visitors.FirstOrDefault().FirstName,
+            VisitorLastName = g.First().Group.Visitors.FirstOrDefault().LastName,
+            nrOfRegisteredVisits = g.Count(),
+            lastExhibitName = g.Last().Exhibit.Title,
+        })
+        .ToList(); ;
+        return allVisitDtos;
     }
 }
