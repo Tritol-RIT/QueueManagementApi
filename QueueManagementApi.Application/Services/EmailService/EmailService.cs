@@ -1,13 +1,7 @@
 ﻿using QueueManagementApi.Core.Entities;
 using System.Net;
 using System.Net.Mail;
-using Microsoft.AspNetCore.Razor;
-using RazorLight;
-using System.Reflection;
-using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using QRCoder;
 using QueueManagementApi.Application.Dtos;
 using System.Globalization;
 using QueueManagementApi.Application.Services.QrCodeService;
@@ -47,7 +41,7 @@ public class EmailService : IEmailService
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
             using (var message = new MailMessage(
-                from: new MailAddress(_smtpUsername, "RITK Queue Managment"),
+                from: new MailAddress(_smtpUsername, "RITK Queue Management"),
                 to: new MailAddress(email, "Visitor")
                 ))
             {
@@ -158,7 +152,6 @@ public class EmailService : IEmailService
             client.EnableSsl = true;
             client.Credentials = new NetworkCredential(_smtpUsername, _smtpPassword);
 
-
             using var message = new MailMessage(
                 from: new MailAddress(_smtpUsername, "RITK Queue Management"),
                 to: new MailAddress(email, $"{visitor.FirstName} {visitor.LastName}"));
@@ -171,7 +164,7 @@ public class EmailService : IEmailService
                 FirstName = visitor.FirstName,
                 LastName = visitor.LastName,
                 ExhibitTitle = visit.Exhibit.Title,
-                QrCodeImage = $"data:image/png;base64, {_qrCodeService.GenerateQrCode(new Guid(visit.QrCode))}",
+                QrCodeImage = $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={visit.QrCode}",
                 VisitDate = visit.PotentialStartTime.ToString("g", new CultureInfo("sq-XK"))
             };
 
