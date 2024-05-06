@@ -164,7 +164,7 @@ public class EmailService : IEmailService
                 FirstName = visitor.FirstName,
                 LastName = visitor.LastName,
                 ExhibitTitle = visit.Exhibit.Title,
-                QrCodeImage = $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={visit.Id}",
+                QrCodeImage = $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={visit.QrCode}",
                 VisitDate = visit.PotentialStartTime.ToString("g", new CultureInfo("sq-XK"))
             };
 
