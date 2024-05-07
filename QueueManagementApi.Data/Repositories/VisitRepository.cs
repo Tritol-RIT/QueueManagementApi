@@ -25,4 +25,11 @@ public class VisitRepository : GenericRepository<Visit>, IVisitRepository
             .OrderBy(v => v.PotentialStartTime)
             .ToListAsync();
     }
+    public async Task<Visit> GetVisitByQrCode(string qrCode)
+    {
+        return await _context.Set<Visit>()
+            .Include(v => v.Group)
+            .Include(v => v.Group.Visitors)
+            .FirstOrDefaultAsync(v => v.QrCode == qrCode);
+    }
 }
