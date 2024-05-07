@@ -61,25 +61,29 @@ public class CheckinService : ICheckinService
                     Group = visit.Group,
                     GroupId = visit.GroupId,
                 };
-                Insurance newInsurance = new Insurance
+                if (item.imageUrl != null)
                 {
-                    ApprovalTime = DateTime.UtcNow,
-                    VisitorId = newVisit.Id,
-                    VisitorImageUrl = item.imageUrl,
-                };
+                    Insurance newInsurance = new Insurance
+                    {
+                        ApprovalTime = DateTime.UtcNow,
+                        VisitorId = newVisit.Id,
+                        VisitorImageUrl = item.imageUrl,
+                    };
+
+                    await _insuranceRepository.AddAsync(newInsurance);
+                }
 
                 await _visitorRepository.AddAsync(newVisit);
-                await _insuranceRepository.AddAsync(newInsurance);
             }
             catch (Exception)
             {
                 throw new QueueApiException($"Failed to save");
-            }            
+            }
         }
     }
     public void checkOut()
     {
-        var lastVisit = _visitRepository.FindByCondition(x => x.ActualEndTime == null && x.ActualStartTime !=null).OrderBy(x => x.ActualStartTime).FirstOrDefault();
+        var lastVisit = _visitRepository.FindByCondition(x => x.ActualEndTime == null && x.ActualStartTime != null).OrderBy(x => x.ActualStartTime).FirstOrDefault();
         lastVisit.ActualEndTime = DateTime.UtcNow;
         _visitRepository.Update(lastVisit);
     }
