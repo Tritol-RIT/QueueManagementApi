@@ -9,7 +9,6 @@ using QueueManagementApi.Application.Services.ExhibitService;
 
 namespace QueueManagementApi.Controllers;
 
-[Route("/exhibit")]
 public class ExhibitController : ApiController
 {
     private readonly IExhibitService _exhibitService;

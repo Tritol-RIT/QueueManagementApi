@@ -14,8 +14,9 @@ public class VisitorController : ApiController
     {
         _visitorService = visitorService;
     }
+
     [HttpGet("GetAllVisitiors")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Staff,Committee")]
     public async Task<IActionResult> GetAction()
     {
         List<AllVisitDto> result = await _visitorService.VisitGetAll();

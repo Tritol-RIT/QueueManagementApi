@@ -1,4 +1,5 @@
 ﻿using QueueManagementApi.Application.Dtos;
+using QueueManagementApi.Application.Dtos.UserDtos;
 using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Pagination;
 
@@ -10,5 +11,5 @@ public interface IUserService
     Task<User?> UpdateUserAsync(int id, UserUpdateDto userUpdateDto);
     Task SetPassword(string token, string newPassword);
     Task RequestResetPassword(string email);
-    Task<PagedList<User>> GetUsers(int page, int pageSize, string? search);
+    Task<PagedList<UserDto>> GetUsers(int page, int pageSize, string? search);
 }

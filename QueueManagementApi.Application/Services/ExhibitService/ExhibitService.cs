@@ -27,7 +27,8 @@ public class ExhibitService : IExhibitService
     {
         var query = _exhibitRepository.GetAll()
             .Include(x => x.Category)
-            .Include(x => x.ExhibitImages);
+            .Include(x => x.ExhibitImages)
+            .OrderByDescending(x => x.CreatedOn);
 
         return query.ToPagedList(page, pageSize);
     }

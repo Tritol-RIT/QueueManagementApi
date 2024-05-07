@@ -5,7 +5,6 @@ using QueueManagementApi.Core.Entities;
 
 namespace QueueManagementApi.Controllers;
 
-[Route("/category")]
 public class CategoryController : ApiController
 {
     private readonly ICategoryService _categoryService;
