@@ -15,14 +15,15 @@ public class VisitorController : ApiController
         _visitorService = visitorService;
     }
 
-    [HttpGet("GetAllVisitiors")]
     [Authorize(Roles = "Admin,Staff,Committee")]
-    public async Task<IActionResult> GetAction()
+    [HttpGet("GetAllVisitors")]
+    public async Task<IActionResult> GetAction(int page, int pageSize, string? search)
     {
-        List<AllVisitDto> result = await _visitorService.VisitGetAll();
+        var result = await _visitorService.VisitGetAll(page, pageSize, search);
 
         return Ok(result);
     }
+
     [HttpPost("register")]
     public async Task<IActionResult> RegisterVisitor(RegisterVisitorDto registerVisitorDto)
     {
