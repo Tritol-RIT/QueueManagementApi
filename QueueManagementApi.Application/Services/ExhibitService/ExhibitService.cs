@@ -20,14 +20,21 @@ public class ExhibitService : IExhibitService
 
     public async Task<Exhibit?> GetExhibitById(int id)
     {
-        return await _exhibitRepository.FindById(id);
+        return await _exhibitRepository.GetAll()
+            .Where(x => x.Id == id)
+            .Include(x => x.ExhibitImages)
+            .Include(x => x.Users)
+            .Include(x => x.Visits)
+            .ThenInclude(x => x.Group)
+            .ThenInclude(x => x.Visitors).SingleOrDefaultAsync();
     }
 
     public PagedList<Exhibit> GetExhibits(int page, int pageSize)
     {
         var query = _exhibitRepository.GetAll()
             .Include(x => x.Category)
-            .Include(x => x.ExhibitImages);
+            .Include(x => x.ExhibitImages)
+            .OrderByDescending(x => x.CreatedOn);
 
         return query.ToPagedList(page, pageSize);
     }
@@ -36,6 +43,7 @@ public class ExhibitService : IExhibitService
     {
         return _exhibitRepository.GetAll().ToList();
     }
+
     public async Task AddSingleExhibit(Exhibit exhibit)
     {
         await _exhibitRepository.AddAsync(exhibit);

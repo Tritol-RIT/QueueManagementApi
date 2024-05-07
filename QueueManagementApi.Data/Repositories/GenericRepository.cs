@@ -29,6 +29,16 @@ public class GenericRepository<T> : IRepository<T> where T : BaseEntity
         return await _context.FindAsync<T>(id);
     }
 
+    public async Task<T?> FindById(int id, params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = _context.Set<T>();
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
+        return await query.SingleOrDefaultAsync(e => e.Id == id);
+    }
+
     public async Task AddAsync(T entity)
     {
         await _context.Set<T>().AddAsync(entity);

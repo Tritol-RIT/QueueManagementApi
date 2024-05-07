@@ -3,6 +3,7 @@ using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using QueueManagementApi.Application.Dtos.UserDtos;
 using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Application.Services.SetPasswordTokenService;
@@ -21,7 +22,8 @@ public class UserService : IUserService
     private readonly IEncryptionService _encryptionService;
     private readonly IEmailService _emailService;
 
-    public UserService(IUnitOfWork unitOfWork, ISetPasswordTokenService setPasswordTokenService, IEncryptionService encryptionService, IEmailService emailService)
+    public UserService(IUnitOfWork unitOfWork, ISetPasswordTokenService setPasswordTokenService,
+        IEncryptionService encryptionService, IEmailService emailService)
     {
         _unitOfWork = unitOfWork;
         _setPasswordTokenService = setPasswordTokenService;
@@ -144,7 +146,8 @@ public class UserService : IUserService
             Active = true
         };
 
-        user.Active = false; // When reset password is requested, that user is deactivated until they reset their password
+        user.Active =
+            false; // When reset password is requested, that user is deactivated until they reset their password
 
         _userRepository.Update(user);
         await _unitOfWork.Repository<SetPasswordToken>().AddAsync(resetPasswordToken);
@@ -152,13 +155,16 @@ public class UserService : IUserService
         await _unitOfWork.CompleteAsync();
 
         // Send email here
-        await _emailService.SendUserResetPasswordEmailAsync(email, "Request for Resetting Password", user, resetPasswordToken.Token);
+        await _emailService.SendUserResetPasswordEmailAsync(email, "Request for Resetting Password", user,
+            resetPasswordToken.Token);
     }
 
-    public async Task<PagedList<User>> GetUsers(int page, int pageSize, string? search)
+    public async Task<PagedList<UserDto>> GetUsers(int page, int pageSize, string? search)
     {
         var res = _userRepository
             .GetAll();
+
+        res = res.Include(x => x.Exhibit);
 
         if (!search.IsEmpty())
         {
@@ -168,6 +174,19 @@ public class UserService : IUserService
 
         res = res.OrderByDescending(x => x.CreatedOn);
 
-        return res.ToPagedList(page, pageSize);
+        var finalResult = res.Select(x => new UserDto {
+            Id = x.Id,
+            Role = x.Role,
+            Email = x.Email,
+            Active = x.Active,
+            LastName = x.LastName,
+            FirstName = x.FirstName,
+            CreatedOn = x.CreatedOn,
+            UpdatedOn = x.UpdatedOn,
+            ExhibitId = x.ExhibitId,
+            ExhibitName = x.Exhibit!.Title
+        });
+
+        return finalResult.ToPagedList(page, pageSize);
     }
 }

@@ -40,6 +40,8 @@ public class UserController : ApiController
         return Ok(result);
     }
 
+
+
     [HttpPut("set-password/{token}")]
     public async Task<IActionResult> SetPassword(string token, [FromBody] string newPassword) // This function should be called for resetting password as well
     {

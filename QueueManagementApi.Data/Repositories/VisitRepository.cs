@@ -32,4 +32,10 @@ public class VisitRepository : GenericRepository<Visit>, IVisitRepository
             .Include(v => v.Group.Visitors)
             .FirstOrDefaultAsync(v => v.QrCode == qrCode);
     }
+    public async Task<List<Visit>> GetVisits() {
+      return await _context.Set<Visit>()
+
+                .Include(v => v.Exhibit)
+                .ToListAsync();
+    }
 }

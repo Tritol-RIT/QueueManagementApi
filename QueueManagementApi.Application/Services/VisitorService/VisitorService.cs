@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using QueueManagementApi.Application.Dtos;
 using QueueManagementApi.Application.Services.ExhibitService;
 using QueueManagementApi.Application.Services.QrCodeService;
@@ -9,6 +10,8 @@ using QueueManagementApi.Core.Entities;
 using QueueManagementApi.Core.Extensions;
 using QueueManagementApi.Core.Interfaces;
 using QueueManagementApi.Core.Services.WaitTimeCalculationService;
+using QueueManagementApi.Application.Dtos;
+using QueueManagementApi.Core.Pagination;
 
 namespace QueueManagementApi.Application.Services.VisitorService;
 
@@ -99,5 +102,26 @@ public class VisitorService : IVisitorService
         await _emailService.SendVisitorRegistrationEmailAsync(initialVisitor.Email, "Exhibit Registration Confirmation", visit, initialVisitor);
 
         return visit;
+    }
+    public async Task<PagedList<AllVisitDto>> VisitGetAll(int page, int pageSize, string? search)
+    {
+        List<Visit> allVisit = await _visitRepository.GetVisits();
+        var allVisitDtos = allVisit
+            .GroupBy(v => v.Group.Visitors.FirstOrDefault().Email)
+            .Select(g => new AllVisitDto
+            {
+                VisitorEmail = g.Key,
+                VisitorFirstName = g.First().Group.Visitors.FirstOrDefault().FirstName,
+                VisitorLastName = g.First().Group.Visitors.FirstOrDefault().LastName,
+                nrOfRegisteredVisits = g.Count(),
+                lastExhibitName = g.Last().Exhibit.Title,
+            });
+
+        if (!search.IsEmpty())
+            allVisitDtos = allVisitDtos.Where(x =>
+                x.VisitorEmail.Contains(search) || x.VisitorFirstName.Contains(search) ||
+                x.VisitorLastName.Contains(search));
+
+        return allVisitDtos.ToPagedList(page, pageSize);
     }
 }
