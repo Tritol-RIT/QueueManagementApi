@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using QueueManagementApi.Application.Models;
 using QueueManagementApi.Application.Services.AuthService;
 using QueueManagementApi.Application.Services.CategoryService;
+using QueueManagementApi.Application.Services.CheckinService;
 using QueueManagementApi.Application.Services.EmailService;
 using QueueManagementApi.Application.Services.EncryptionService;
 using QueueManagementApi.Application.Services.ExhibitService;
@@ -60,6 +61,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IVisitorService, VisitorService>();
         services.AddScoped<IWaitTimeCalculationService, WaitTimeCalculationService>();
         services.AddScoped<IQrCodeService, QrCodeService>();
+        services.AddScoped<ICheckinService, CheckinService>();
     }
 
     public static void AddRepositories(this IServiceCollection services)
@@ -70,6 +72,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IRepository<Visit>, GenericRepository<Visit>>();
         services.AddScoped<IRepository<Visitor>, GenericRepository<Visitor>>();
         services.AddScoped<IRepository<Group>, GenericRepository<Group>>();
+        services.AddScoped<IRepository<Insurance>, GenericRepository<Insurance>>();
 
         services.AddScoped<IVisitRepository, VisitRepository>();
 
