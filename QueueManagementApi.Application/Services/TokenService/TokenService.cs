@@ -43,7 +43,7 @@ public class TokenService : ITokenService
                 new Claim(ClaimTypes.GivenName, user.FirstName),
                 new Claim(ClaimTypes.Surname, user.LastName),
             }),
-            Expires = tokenType == "refresh" ? DateTime.UtcNow.AddHours(expirationHours) : DateTime.UtcNow.AddSeconds(expirationHours), // debug remove AddSeconds
+            Expires = DateTime.UtcNow.AddHours(expirationHours),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
         

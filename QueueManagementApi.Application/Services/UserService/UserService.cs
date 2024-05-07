@@ -187,8 +187,6 @@ public class UserService : IUserService
             ExhibitName = x.Exhibit!.Title
         });
 
-        var temp = finalResult.ToQueryString();
-
         return finalResult.ToPagedList(page, pageSize);
     }
 }
