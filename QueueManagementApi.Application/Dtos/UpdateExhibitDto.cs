@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace QueueManagementApi.Application.Dtos;
+﻿namespace QueueManagementApi.Application.Dtos;
 
 public class UpdateExhibitDto
 {
@@ -11,4 +9,5 @@ public class UpdateExhibitDto
     public bool? InsuranceFormRequired { get; set; }
     public bool? AgeRequired { get; set; }
     public string? InsuranceFormFileUrl { get; set; }
+    public List<ExhibitImageDto> ExhibitImages { get; set; }
 }

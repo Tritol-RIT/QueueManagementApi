@@ -172,10 +172,10 @@ public class ExhibitController : ApiController
             exhibit.InsuranceFormFileUrl
         };
 
-        if (initialState.Equals(updatedState))
-        {
-            return BadRequest("No updates were necessary for this exhibit.");
-        }
+        var newImages = updatedExhibit.ExhibitImages.Select(x =>
+            new ExhibitImage() { DisplayOrder = x.DisplayOrder, ImageUrl = x.ImageUrl }).ToList();
+
+        exhibit.ExhibitImages = newImages;
 
         await _exhibitService.UpdateSingleExhibit(exhibit);
         return Ok(exhibit);

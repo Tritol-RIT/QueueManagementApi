@@ -165,7 +165,7 @@ public class EmailService : IEmailService
                 LastName = visitor.LastName,
                 ExhibitTitle = visit.Exhibit.Title,
                 QrCodeImage = $"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={visit.QrCode}",
-                VisitDate = visit.PotentialStartTime.ToString("g", new CultureInfo("sq-XK"))
+                VisitDate = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(visit.PotentialStartTime.AddHours(-1), "GTB Standard Time").ToString("g")
             };
 
             var emailBody = await _emailTemplate.RenderEmailTemplateAsync("RegisterVisitorEmailTemplate.cshtml", emailModel);
